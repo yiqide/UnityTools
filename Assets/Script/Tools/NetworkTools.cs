@@ -16,7 +16,15 @@ public static class NetworkTools
     /// 当前下载器的数量
     /// </summary>
     public static int DownloaderCount => coroutines.Count;
-    private static List<Coroutine> coroutines = new List<Coroutine>(); 
+    private static List<Coroutine> coroutines = new List<Coroutine>();
+    
+    /// <summary>
+    /// 下载成功的任务 UnityWebRequest 是null
+    /// 下载失败的任务将会从里面移除
+    /// string-任务名称  UnityWebRequest-下载对象
+    /// </summary>
+    public static Dictionary<string, UnityWebRequest> TasksSchedule => _tasksSchedule;
+    private static readonly Dictionary<string, UnityWebRequest> _tasksSchedule = new Dictionary<string, UnityWebRequest>();
 
     /// <summary>
     /// action会在任务完成时执行
@@ -52,6 +60,7 @@ public static class NetworkTools
         string filepath;
         Action<bool> action;
         byte[] data;
+        string taskName;
         while (true)
         {
             if (_tasks.Count != 0)
@@ -61,6 +70,23 @@ public static class NetworkTools
                 action = _tasks[0].Action;
                 _tasks.RemoveAt(0);
                 UnityWebRequest request = UnityWebRequest.Get(url);
+                taskName = filepath;
+                if (!_tasksSchedule.TryAdd(taskName, request))
+                {
+                    int ls=1;
+                    while (true)
+                    {
+                        taskName = filepath + ls;
+                        if (!_tasksSchedule.TryAdd(taskName, request))
+                        {
+                            ls++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
                 yield return request.SendWebRequest();
                 for (int i = 0; i < 3; i++)
                 {
@@ -84,9 +110,10 @@ public static class NetworkTools
                         Debug.Log(request.error);
                         action?.Invoke(false);
                         taskCount--;
+                        _tasksSchedule.Remove(taskName);
                     }
                 }
-
+                _tasksSchedule[taskName] = null;
                 request.Dispose();
             }
 

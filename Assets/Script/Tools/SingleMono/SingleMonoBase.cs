@@ -17,7 +17,7 @@ public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface wh
     private static T instance;
 
     /// <summary>
-    /// 将会在实例化的时候调用
+    /// 将会在实例化的时候调用,在Awake方法之后调用
     /// </summary>
     public virtual void Init()
     {

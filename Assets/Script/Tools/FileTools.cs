@@ -21,7 +21,7 @@ public static class FileTools
         fileStream.Dispose();
     }
 
-    public static void WriteFile(string path, byte[] data)
+    public static void WriteFile_bytes(string path, byte[] data)
     {
         string savePath = Path.GetDirectoryName(path);
         if (Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
