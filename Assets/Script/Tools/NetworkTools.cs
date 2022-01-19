@@ -17,7 +17,7 @@ public static class NetworkTools
     /// </summary>
     public static int DownloaderCount => coroutines.Count;
     private static List<Coroutine> coroutines = new List<Coroutine>();
-    
+
     /// <summary>
     /// 下载成功的任务 UnityWebRequest 是null
     /// 下载失败的任务将会从里面移除
