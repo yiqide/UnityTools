@@ -12,7 +12,7 @@ public class CoroutineTools : SingleMonoBase<CoroutineTools>
         StartCoroutine(ActionUnityMainThread());
     }
 
-    private List<MyAction> _myActions = new List<MyAction>();
+    private List<Func<bool>> _funcs = new List<Func<bool>>();
     private Queue<Action> _actions = new Queue<Action>();
 
     /// <summary>
@@ -26,29 +26,30 @@ public class CoroutineTools : SingleMonoBase<CoroutineTools>
         }
     }
 
-
-
     /// <summary>
     /// 添加到里面到方法会每一帧执行一次，返回true后将不会在执行
     /// </summary>
     /// <param name="action"></param>
-    public void AddAction(MyAction action)
+    public void AddAction(Func<bool> action)
     {
-        _myActions.Add(action);
+        _funcs.Add(action);
     }
-
+    
+    /// <summary>
+    /// 当state返回true时代表该任务已经结束了
+    /// </summary>
     IEnumerator ActionUnityMainThread()
     {
         bool state = false;
         while (true)
         {
-            int count = _myActions.Count;
+            int count = _funcs.Count;
             for (int i = 0; i < count; i++)
             {
-                state = _myActions[i].Invoke();
+                state = _funcs[i].Invoke();
                 if (state)
                 {
-                    _myActions.Remove(_myActions[i]);
+                    _funcs.Remove(_funcs[i]);
                     i--;
                     count -= 1;
                 }
@@ -76,10 +77,4 @@ public class CoroutineTools : SingleMonoBase<CoroutineTools>
             yield return null;
         }
     }
-
-    /// <summary>
-    /// 当state返回true时代表该任务已经结束了
-    /// </summary>
-    public delegate bool MyAction();
-
 }

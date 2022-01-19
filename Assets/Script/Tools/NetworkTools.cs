@@ -8,8 +8,7 @@ using UnityEngine.Networking;
 public static class NetworkTools
 {
     //下载系统
-    private static int taskCount = 0;
-    public static int TaskCount => taskCount;
+    public static int TaskCount => _tasks.Count;
     private static readonly object LockMe = new object();
     private static List<Task> _tasks = new List<Task>();
     /// <summary>
@@ -38,14 +37,13 @@ public static class NetworkTools
         lock (LockMe)
         {
             _tasks.Add(new Task(filePath, url, callBackAction));
-            taskCount++;
         }
     }
 
     /// <summary>
-    /// 添加下载器，在任务多的时候可以进行并行下载
+    /// 添加下载器，在任务多的时候会提升下载速度
     /// </summary>
-    /// <param name="count">下载器的数量</param>
+    /// <param name="count">要添加下载器的数量</param>
     public static void AddDownloader(int count)
     {
         for (int i = 0; i < count; i++)
@@ -99,7 +97,6 @@ public static class NetworkTools
                         }
 
                         Debug.Log("下载完成");
-                        taskCount--;
                         action?.Invoke(true);
                         break;
                     }
@@ -107,9 +104,8 @@ public static class NetworkTools
                     if (i == 2)
                     {
                         Debug.Log("下载失败");
-                        Debug.Log(request.error);
+                        Debug.LogWarning(request.error);
                         action?.Invoke(false);
-                        taskCount--;
                         _tasksSchedule.Remove(taskName);
                     }
                 }
