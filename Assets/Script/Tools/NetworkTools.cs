@@ -92,6 +92,7 @@ public static class NetworkTools
                     {
                         using (FileStream fs = new FileStream(filepath, FileMode.OpenOrCreate))
                         {
+                            fs.SetLength(0);
                             data = request.downloadHandler.data;
                             fs.Write(data, 0, data.Length);
                         }
