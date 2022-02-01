@@ -51,9 +51,9 @@ public static class FileTools
         return s;
     }
 
-    public static byte[] ReadFile_bytes(string path)
+    public static byte[] ReadFile_bytes(string path, FileMode mode = FileMode.Open)
     {
-        FileStream fileStream = new FileStream(path, FileMode.Open);
+        FileStream fileStream = new FileStream(path, mode);
         int length = (int) fileStream.Length;
         byte[] bytes = new byte[length];
         fileStream.Read(bytes, 0, length);
