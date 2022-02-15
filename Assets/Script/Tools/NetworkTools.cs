@@ -31,7 +31,7 @@ public static class NetworkTools
     /// <param name="filePath"></param>
     /// <param name="url"></param>
     /// <param name="callBackAction">会在任务完成时执行</param>
-    public static void AddTask(string filePath, string url, Action<bool> callBackAction)
+    public static void AddTask(string filePath, string url, Action<bool> callBackAction=null)
     {
         if (DownloaderCount == 0) AddDownloader(1);
         lock (LockMe)
@@ -106,6 +106,14 @@ public static class NetworkTools
                     {
                         Debug.Log("下载失败");
                         Debug.LogWarning(request.error);
+                        try
+                        {
+                            File.Delete(filepath);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning(e);
+                        }
                         action?.Invoke(false);
                         _tasksSchedule.Remove(taskName);
                     }
