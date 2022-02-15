@@ -1,15 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 public static class FileTools
 {
     public static void WriteFile(string path, string data)
     {
         string savePath= Path.GetDirectoryName(path);
-        if(Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
+        if(!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
 
         FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
         StreamWriter streamWriter = new StreamWriter(fileStream);
@@ -24,7 +20,7 @@ public static class FileTools
     public static void WriteFile_bytes(string path, byte[] data)
     {
         string savePath = Path.GetDirectoryName(path);
-        if (Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
+        if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
 
         FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
         fileStream.SetLength(0);

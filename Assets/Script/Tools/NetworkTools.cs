@@ -41,6 +41,37 @@ public static class NetworkTools
     }
 
     /// <summary>
+    /// action会在任务组完成时执行
+    /// </summary>
+    /// <param name="filePathAndUrl">key-filePath  value-url</param>
+    /// <param name="callBackAction"></param>
+    public static void AddTasks(Dictionary<string,string> filePathAndUrl,Action<bool>  callBackAction=null)
+    {
+        if (DownloaderCount == 0) AddDownloader(1);
+        var count = filePathAndUrl.Count;
+        int taskSucceedCount = 0;
+        foreach (var item in filePathAndUrl)
+        {
+            var task = new Task(item.Key, item.Value, (b) =>
+            {
+                if (b)
+                {
+                    taskSucceedCount++;
+                    if (taskSucceedCount==count)
+                    {
+                        callBackAction?.Invoke(true);
+                    }
+                }
+                else
+                {
+                    callBackAction?.Invoke(false);
+                }   
+            });
+            _tasks.Add(task);
+        }
+    }
+
+    /// <summary>
     /// 添加下载器，在任务多的时候会提升下载速度
     /// </summary>
     /// <param name="count">要添加下载器的数量</param>
@@ -85,6 +116,10 @@ public static class NetworkTools
                         }
                     }
                 }
+                
+                string savePath = Path.GetDirectoryName(filepath);
+                if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
+                
                 yield return request.SendWebRequest();
                 for (int i = 0; i < 3; i++)
                 {
