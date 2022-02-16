@@ -8,9 +8,9 @@ using UnityEngine.Networking;
 public static class NetworkTools
 {
     //下载系统
-    public static int TaskCount => _tasks.Count;
+    public static int TaskCount => tasks.Count;
     private static readonly object LockMe = new object();
-    private static List<Task> _tasks = new List<Task>();
+    private static List<Task> tasks = new List<Task>();
     /// <summary>
     /// 当前下载器的数量
     /// </summary>
@@ -22,8 +22,8 @@ public static class NetworkTools
     /// 下载失败的任务将会从里面移除
     /// string-任务名称  UnityWebRequest-下载对象
     /// </summary>
-    public static Dictionary<string, UnityWebRequest> TasksSchedule => _tasksSchedule;
-    private static readonly Dictionary<string, UnityWebRequest> _tasksSchedule = new Dictionary<string, UnityWebRequest>();
+    public static Dictionary<string, UnityWebRequest> TasksSchedule => tasksSchedule;
+    private static readonly Dictionary<string, UnityWebRequest> tasksSchedule = new Dictionary<string, UnityWebRequest>();
 
     /// <summary>
     /// action会在任务完成时执行
@@ -31,12 +31,12 @@ public static class NetworkTools
     /// <param name="filePath"></param>
     /// <param name="url"></param>
     /// <param name="callBackAction">会在任务完成时执行</param>
-    public static void AddTask(string filePath, string url, Action<bool> callBackAction)
+    public static void AddTask(string filePath, string url, Action<string,bool> callBackAction)
     {
         if (DownloaderCount == 0) AddDownloader(1);
         lock (LockMe)
         {
-            _tasks.Add(new Task(filePath, url, callBackAction));
+            tasks.Add(new Task(filePath, url, callBackAction));
         }
     }
 
@@ -56,26 +56,26 @@ public static class NetworkTools
     {
         string url;
         string filepath;
-        Action<bool> action;
+        Action<string,bool> action;
         byte[] data;
         string taskName;
         while (true)
         {
-            if (_tasks.Count != 0)
+            if (tasks.Count != 0)
             {
-                url = _tasks[0].value;
-                filepath = _tasks[0].key;
-                action = _tasks[0].Action;
-                _tasks.RemoveAt(0);
+                url = tasks[0].value;
+                filepath = tasks[0].key;
+                action = tasks[0].Action;
+                tasks.RemoveAt(0);
                 UnityWebRequest request = UnityWebRequest.Get(url);
                 taskName = filepath;
-                if (!_tasksSchedule.TryAdd(taskName, request))
+                if (!tasksSchedule.TryAdd(taskName, request))
                 {
                     int ls=1;
                     while (true)
                     {
                         taskName = filepath + ls;
-                        if (!_tasksSchedule.TryAdd(taskName, request))
+                        if (!tasksSchedule.TryAdd(taskName, request))
                         {
                             ls++;
                         }
@@ -98,7 +98,7 @@ public static class NetworkTools
                         }
 
                         Debug.Log("下载完成");
-                        action?.Invoke(true);
+                        action?.Invoke(filepath,true);
                         break;
                     }
 
@@ -106,11 +106,11 @@ public static class NetworkTools
                     {
                         Debug.Log("下载失败");
                         Debug.LogWarning(request.error);
-                        action?.Invoke(false);
-                        _tasksSchedule.Remove(taskName);
+                        action?.Invoke(filepath,false);
+                        tasksSchedule.Remove(taskName);
                     }
                 }
-                _tasksSchedule[taskName] = null;
+                tasksSchedule[taskName] = null;
                 request.Dispose();
             }
 
@@ -122,9 +122,9 @@ public static class NetworkTools
     {
         public string key; // filePath
         public string value; //url
-        public Action<bool> Action;
+        public Action<string,bool> Action;
 
-        public Task(string k, string v, Action<bool> a)
+        public Task(string k, string v, Action<string,bool> a)
         {
             key = k;
             value = v;
