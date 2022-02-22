@@ -50,6 +50,7 @@ public static class NetworkTools
         if (DownloaderCount == 0) AddDownloader(1);
         var count = filePathAndUrl.Count;
         int taskSucceedCount = 0;
+        bool taskFailed=false;
         foreach (var item in filePathAndUrl)
         {
             var task = new Task(item.Key, item.Value, (b) =>
@@ -64,7 +65,11 @@ public static class NetworkTools
                 }
                 else
                 {
-                    callBackAction?.Invoke(false);
+                    if (!taskFailed) 
+                    {
+                        callBackAction?.Invoke(false);
+                        taskFailed = true;
+                    }
                 }   
             });
             _tasks.Add(task);
