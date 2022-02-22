@@ -32,13 +32,14 @@ public class SingleMonoManager : MonoBehaviour
             if (item.IsClass && !item.IsAbstract) typeInterFaces.Add(item, item.GetInterfaces());
         }
 
-        var types = initialized.GetTypes(typeInterFaces, typeof(ISingleMonoInterface));
-        foreach (var item in types)
+        var singleMonoInterfaceTypes = initialized.GetTypes(typeInterFaces, typeof(ISingleMonoInterface));
+        var singleInterfaceTypes=initialized.GetTypes(typeInterFaces, typeof(ISingleInterface));
+        foreach (var item in singleMonoInterfaceTypes)
         {
             try
             {
                 ((ISingleMonoInterface)initialized.gameObject.AddComponent(item)).Init();
-                Debug.Log("添加单例：" + item.FullName);
+                Debug.Log("添加Mono单例：" + item.FullName);
             }
             catch (Exception e)
             {
@@ -46,7 +47,19 @@ public class SingleMonoManager : MonoBehaviour
                 Debug.LogException(new Exception(item.FullName + ":该类型可能没有继承SingleMonoBase<T>", e));
                 throw new Exception("严重错误");
             }
-
+        }
+        foreach (var item in singleInterfaceTypes)
+        {
+            try
+            {
+                ((ISingleInterface)item.Assembly.CreateInstance(item.Name)).Init();
+                Debug.Log("添加非Mono单例：" + item.FullName);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(new Exception(item.FullName + ":该类型可能没有继承SingleBase<T>", e));
+                throw new Exception("严重错误");
+            }
         }
     }
 
@@ -68,5 +81,10 @@ public class SingleMonoManager : MonoBehaviour
 public interface ISingleMonoInterface
 {
 
+    public abstract void Init();
+}
+
+public interface ISingleInterface
+{
     public abstract void Init();
 }

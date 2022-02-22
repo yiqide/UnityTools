@@ -28,5 +28,5 @@ public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface wh
         }
         instance = (T)this;
     }
-
+    
 }

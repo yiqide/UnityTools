@@ -232,7 +232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gameObject1: {fileID: 0}
   GameObject2: {fileID: 0}
-  Shader: {fileID: 4800000, guid: 9894cf0bbcff2493caa06d02f2959bbc, type: 3}
+  Shader: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
