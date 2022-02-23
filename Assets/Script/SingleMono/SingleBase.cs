@@ -21,7 +21,7 @@ public abstract class SingleBase<T> : ISingleInterface where T: SingleBase<T>
     /// <summary>
     /// 将会在实例化的时候调用,在Awake方法之后调用
     /// </summary>
-    public virtual void Init()
+    protected void Init()
     {
         if (instance != null)
         {
@@ -29,5 +29,12 @@ public abstract class SingleBase<T> : ISingleInterface where T: SingleBase<T>
             return;
         }
         instance = (T)this;
+        SingleMonoManager.Sign(GetType());
+        Awake();
+    }
+
+    public virtual void Awake()
+    {
+        
     }
 }

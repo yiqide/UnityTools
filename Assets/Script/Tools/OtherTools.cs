@@ -85,6 +85,11 @@ public static class OtherTools
         vale = default;
     }
 
+    public static void GetFunction()
+    {
+        
+    }
+
     #region 加密工具
 
     /// <summary>

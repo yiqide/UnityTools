@@ -13,8 +13,17 @@ public class SingleMonoManager : MonoBehaviour
         gameObject.name = "SingleMonoManager";
         initialized = this;
         FindAddScript();
-
     }
+
+    private static List<string> signType=new List<string>();
+    public static void Sign(Type type)
+    {
+        if (!signType.Contains(type.FullName))
+        {
+            signType.Add(type.FullName);
+        }
+    }
+
     public static void Init()
     {
         if (initialized != null) return;
@@ -38,12 +47,16 @@ public class SingleMonoManager : MonoBehaviour
         {
             try
             {
-                ((ISingleMonoInterface)initialized.gameObject.AddComponent(item)).Init();
-                Debug.Log("添加Mono单例：" + item.FullName);
+                if (!signType.Contains(item.FullName))
+                {
+                    ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(item);
+                    var methodInfo =sin.GetType().GetProperty("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                    methodInfo.GetMethod.Invoke(sin,null);//Invoke(sin,null);
+                    Debug.Log("添加Mono单例：" + item.FullName);
+                }
             }
             catch (Exception e)
             {
-
                 Debug.LogException(new Exception(item.FullName + ":该类型可能没有继承SingleMonoBase<T>", e));
                 throw new Exception("严重错误");
             }
@@ -52,8 +65,13 @@ public class SingleMonoManager : MonoBehaviour
         {
             try
             {
-                ((ISingleInterface)item.Assembly.CreateInstance(item.Name)).Init();
-                Debug.Log("添加非Mono单例：" + item.FullName);
+                if (!signType.Contains(item.FullName))
+                {
+                    ISingleInterface sin=(ISingleInterface) item.Assembly.CreateInstance(item.Name);
+                    var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                    methodInfo.Invoke(sin,null);
+                    Debug.Log("添加非Mono单例：" + item.FullName);
+                }
             }
             catch (Exception e)
             {
@@ -80,11 +98,8 @@ public class SingleMonoManager : MonoBehaviour
 }
 public interface ISingleMonoInterface
 {
-
-    public abstract void Init();
 }
 
 public interface ISingleInterface
 {
-    public abstract void Init();
 }

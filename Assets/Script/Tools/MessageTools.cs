@@ -14,18 +14,34 @@ public enum EReceiveMessage
 
 public class MessageTools : SingleBase<MessageTools>
 {
+    public override void Awake()
+    {
+        
+    }
+
     public void sds()
     {
         Debug.Log("???");
+    }
+
+    public void Register(IReceiveMessage receiveMessage)
+    {
+        
+    }
+    private void SendMessage(ISendMessage sendMessage)
+    {
+        
     }
 }
 
 public interface ISendMessage
 {
+    public ESendMessage ESendMessage { get; set; }
     public void SendMessage();
 }
 
 public interface IReceiveMessage
 {
-    public void ReceiveMessage();
+    public EReceiveMessage EReceiveMessage { get; set; }
+    public void ReceiveMessage(EReceiveMessage selfType);
 }

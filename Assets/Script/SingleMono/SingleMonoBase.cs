@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface where T : SingleMonoBase<T>
@@ -19,14 +20,20 @@ public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface wh
     /// <summary>
     /// 将会在实例化的时候调用,在Awake方法之后调用
     /// </summary>
-    public virtual void Init()
+    protected void Init()
     {
-        if (instance != null)
-        {
-            Debug.LogWarning("你不能自己调用这个方法");
-            return;
-        }
+        if (instance != null)return;
         instance = (T)this;
+        Awake();
+        
     }
-    
+
+    public virtual void Awake()
+    {
+        SingleMonoManager.Sign(GetType());
+        if (instance == null)
+        {
+            instance = (T)this;
+        }
+    }
 }
