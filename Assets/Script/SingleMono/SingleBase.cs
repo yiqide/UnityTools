@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,8 @@ public abstract class SingleBase<T> : ISingleInterface where T: SingleBase<T>
             if (SingleMonoManager.Instance == null) SingleMonoManager.Init();
             if (instance == null)
             {
-                Debug.LogError(Instance.GetType() + "是空的，意料之外的错误");
+                SingleMonoManager.Sign(typeof(T));
+                SingleMonoManager.InstantiationTarget<T>();
             }
             return instance;
         }

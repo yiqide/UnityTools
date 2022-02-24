@@ -12,13 +12,9 @@ public enum EReceiveMessage
     All
 }
 
+[Single(false)]
 public class MessageTools : SingleBase<MessageTools>
 {
-    public override void Awake()
-    {
-        base.Awake();
-    }
-
     public void sds()
     {
         Debug.Log("???");

@@ -49,10 +49,22 @@ public class SingleMonoManager : MonoBehaviour
             {
                 if (!signType.Contains(item.FullName))
                 {
-                    ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(item);
-                    var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
-                    methodInfo.Invoke(sin,null);//Invoke(sin,null);
-                    Debug.Log("添加Mono单例：" + item.FullName);
+                    var attribute= item.GetCustomAttribute<SingleAttribute>();
+                    if (attribute==null)
+                    {
+                        ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(item);
+                        var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                        methodInfo.Invoke(sin,null);//Invoke(sin,null);
+                        Debug.Log("添加Mono单例：" + item.FullName);
+                    }
+                    else if (attribute.AutomaticallyCreated)
+                    {
+                        ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(item);
+                        var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                        methodInfo.Invoke(sin,null);//Invoke(sin,null);
+                        Debug.Log("添加Mono单例：" + item.FullName);
+                    }
+
                 }
             }
             catch (Exception e)
@@ -67,10 +79,25 @@ public class SingleMonoManager : MonoBehaviour
             {
                 if (!signType.Contains(item.FullName))
                 {
-                    ISingleInterface sin=(ISingleInterface) item.Assembly.CreateInstance(item.Name);
-                    var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
-                    methodInfo.Invoke(sin,null);
-                    Debug.Log("添加非Mono单例：" + item.FullName);
+                    var attribute= item.GetCustomAttribute<SingleAttribute>();
+                    if (attribute == null)
+                    {
+                        ISingleInterface sin=(ISingleInterface) item.Assembly.CreateInstance(item.Name);
+                        var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                        methodInfo.Invoke(sin,null);
+                        Debug.Log("添加非Mono单例：" + item.FullName);
+                    }
+                    else if (attribute.AutomaticallyCreated)
+                    {
+                        ISingleInterface sin=(ISingleInterface) item.Assembly.CreateInstance(item.Name);
+                        var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                        methodInfo.Invoke(sin,null);
+                        Debug.Log("添加非Mono单例：" + item.FullName);
+                    }
+                    else
+                    {
+                        Debug.Log("不需要自动创建：" + item.FullName);
+                    }
                 }
             }
             catch (Exception e)
@@ -81,6 +108,22 @@ public class SingleMonoManager : MonoBehaviour
         }
     }
 
+    public static void InstantiationMonoTarget<T>() where T: ISingleMonoInterface
+    {
+        ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(typeof(T));
+        var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+        methodInfo.Invoke(sin,null);//Invoke(sin,null);
+        Debug.Log("添加Mono单例：" + typeof(T).FullName);
+    }
+
+    public static void InstantiationTarget<T>() where T: ISingleInterface
+    {
+        ISingleInterface sin = (ISingleInterface) typeof(T).Assembly.CreateInstance(typeof(T).Name);
+        var methodInfo = sin.GetType().GetMethod("Init", BindingFlags.NonPublic | BindingFlags.Instance);
+        methodInfo.Invoke(sin, null);
+        Debug.Log("添加非Mono单例：" + typeof(T).FullName);
+    }
+    
     private IEnumerable<Type> GetTypes(Dictionary<Type, Type[]> typeInterFaces, Type interfaceType)
     {
         foreach (var t in typeInterFaces)

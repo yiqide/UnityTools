@@ -10,7 +10,9 @@ public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface wh
             if (SingleMonoManager.Instance == null) SingleMonoManager.Init();
             if (instance == null)
             {
-                Debug.LogError(Instance.GetType() + "是空的，意料之外的错误");
+                //启动对应的实例化
+                SingleMonoManager.Sign(typeof(T));
+                SingleMonoManager.InstantiationMonoTarget<T>();
             }
             return instance;
         }

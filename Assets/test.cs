@@ -7,6 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
+[Single(false)]
 public class test : SingleMonoBase<test>
 {
     public Image _gameObject1;
@@ -212,7 +213,15 @@ public class test : SingleMonoBase<test>
         
         if (Input.anyKey)
         {
-            MessageTools.Instance.sds();
+            try
+            { 
+              Debug.Log(  MessageTools.Instance==null);
+
+            }
+            catch (Exception e)
+            {
+            }
+           
         }
     }
 }
