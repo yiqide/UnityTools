@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class CoroutineTools : SingleMonoBase<CoroutineTools>
 {
 
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
         StartCoroutine(ActionWithUnityMainThread());

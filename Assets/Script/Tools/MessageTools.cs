@@ -15,6 +15,11 @@ public enum EReceiveMessage
 [SingleScript(false)]
 public class MessageTools : SingleBase<MessageTools>
 {
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     public void sds()
     {
         Debug.Log("???");

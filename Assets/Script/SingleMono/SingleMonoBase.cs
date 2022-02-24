@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 /// <summary>
@@ -33,7 +32,7 @@ public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface wh
         instance = (T)this;
     }
 
-    public virtual void Awake()
+    protected virtual void Awake()
     {
         if (instance == null)
         {

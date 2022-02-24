@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -37,9 +34,15 @@ public abstract class SingleBase<T> : ISingleInterface where T: SingleBase<T>
         instance = (T)this;
         SingleMonoManager.Sign(GetType());
         Awake();
+        Start();
     }
 
-    public virtual void Awake()
+    protected virtual void Awake()
+    {
+        
+    }
+
+    protected virtual void Start()
     {
         
     }
