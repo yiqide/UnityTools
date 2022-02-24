@@ -19,7 +19,7 @@ public abstract class SingleBase<T> : ISingleInterface where T: SingleBase<T>
     private static T instance;
     
     /// <summary>
-    /// 将会在实例化的时候调用,在Awake方法之后调用
+    /// 将会在实例化的时候调用,在Awake方法之 前调用
     /// </summary>
     protected void Init()
     {

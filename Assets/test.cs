@@ -156,6 +156,13 @@ public class test : SingleMonoBase<test>
             });
     }
 
+    public override void Awake()
+    {
+        base.Awake();
+        Debug.Log("你好");
+    }
+    
+
     private DateTime _dateTime;
     private int h=0;
     private int m=0;

@@ -50,8 +50,8 @@ public class SingleMonoManager : MonoBehaviour
                 if (!signType.Contains(item.FullName))
                 {
                     ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(item);
-                    var methodInfo =sin.GetType().GetProperty("Init",BindingFlags.NonPublic | BindingFlags.Instance);
-                    methodInfo.GetMethod.Invoke(sin,null);//Invoke(sin,null);
+                    var methodInfo =sin.GetType().GetMethod("Init",BindingFlags.NonPublic | BindingFlags.Instance);
+                    methodInfo.Invoke(sin,null);//Invoke(sin,null);
                     Debug.Log("添加Mono单例：" + item.FullName);
                 }
             }

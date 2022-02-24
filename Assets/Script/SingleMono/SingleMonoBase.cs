@@ -18,22 +18,26 @@ public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface wh
     private static T instance;
 
     /// <summary>
-    /// 将会在实例化的时候调用,在Awake方法之后调用
+    /// 将会在实例化的时候调用,在Unity Awake方法之后调用
     /// </summary>
     protected void Init()
     {
         if (instance != null)return;
+        SingleMonoManager.Sign(GetType());
         instance = (T)this;
-        Awake();
-        
     }
 
     public virtual void Awake()
     {
-        SingleMonoManager.Sign(GetType());
         if (instance == null)
         {
+            SingleMonoManager.Sign(GetType());
             instance = (T)this;
+        }
+        else
+        {
+            Destroy(this);
+            Debug.LogWarning("你在场景中已经添加了重复的单例，已经销毁了");
         }
     }
 }
