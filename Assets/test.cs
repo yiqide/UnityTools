@@ -8,16 +8,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [SingleScript(false)]
-public class test : SingleMonoBase<test>
+public class test : SingleMonoBase<test> , ISendEvent ,IReceiveEvent
 {
-    public Image _gameObject1;
-    public Image GameObject2;
-    public Shader Shader;
-
     void Start()
     {
-
-       
         return;
         List<string> level2022_1 = new List<string>();
         List<string> level2022_2 = new List<string>();
@@ -103,109 +97,18 @@ public class test : SingleMonoBase<test>
         FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_4.json",SerializeTools.ObjToString(count_down_2022_4.ToArray()));
         FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_5.json",SerializeTools.ObjToString(count_down_2022_5.ToArray()));
         FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_6.json",SerializeTools.ObjToString(count_down_2022_6.ToArray()));
-
         return;
-
-
-
-        int[] strings = new int[]
-        {
-           60,60,60,60,60,60,60,60,60,60,
-           60,60,60,60,60,60,60,60,60,60,
-           60,60,60,60,60,60,60,60,60,60,
-        };
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_1.json",SerializeTools.ObjToString(strings));
-        return;
-        Material material = new Material(Shader);
-        material.SetFloat("_Gray",1);
-        _gameObject1.material=material;
-        material = new Material(Shader);
-        material.SetFloat("_Gray",1);
-        GameObject2.material=material;
-        var timeSpan = TimeZoneInfo.Local.GetUtcOffset(System.DateTime.Now);
-        string offset="";
-        if (timeSpan.Hours >= 0 && timeSpan.Hours<10)
-        {
-            offset = "+0" + timeSpan.Hours;
-        }
-
-        if (timeSpan.Hours<0&&timeSpan.Hours>-10)
-        {
-            offset = "-0" + Math.Abs(timeSpan.Hours);
-        }
-
-        if (timeSpan.Hours>=10)
-        {
-            offset = "+" + timeSpan.Hours;
-        }
-
-        if (timeSpan.Hours<=-10)
-        {
-            offset = timeSpan.Hours.ToString();
-        }
-        offset += ":00";
-        Debug.Log("offset:"+offset);
-        NetworkTools.AddTask("/Users/ddw/Downloads/ls.txt",
-            "https://saas.castbox.fm/tool/api/v1/system/time?pattern=yyyy-MM-dd&offsetId="+offset,
-            (b) =>
-            {
-                if (b)
-                {
-                   Debug.Log(FileTools.ReadFile("/Users/ddw/Downloads/ls.txt"));
-                   _dateTime = new DateTime();
-                }
-            });
     }
 
-    public override void Awake()
+    protected override void Awake()
     {
         base.Awake();
-        Debug.Log("你好");
-    }
-    
-
-    private DateTime _dateTime;
-    private int h=0;
-    private int m=0;
-    private float s=0;
-
-    public int H
-    {
-        get => h;
-        set
-        {
-            h= value;
-        }
+        this.RegisterEvent( ESendType.EAll,action);
     }
 
-    public int M
+    private void action(object[] objects)
     {
-        get => m;
-        set
-        {
-            m = value;
-            if (m>=60)
-            {
-                H++;
-                m = m - 60;
-            }
-
-            _dateTime.AddMinutes(1);
-        }
-    }
-
-    public float S
-    {
-        get => s;
-        set
-        {
-            s = value;
-            if (s>=60)
-            {
-                M++;
-                s = s - 60;
-            }
-        }
+        Debug.Log(objects[0]);
     }
 
     private void Update()
@@ -213,15 +116,10 @@ public class test : SingleMonoBase<test>
         
         if (Input.anyKey)
         {
-            try
-            { 
-              Debug.Log(  MessageTools.Instance==null);
-
-            }
-            catch (Exception e)
-            {
-            }
-           
+            this.SendEvent(EReceiveType.EAll,"你好");  
         }
     }
+
+    public ESendType SendType => ESendType.Default;
+    public EReceiveType ReceiveType => EReceiveType.Default;
 }
