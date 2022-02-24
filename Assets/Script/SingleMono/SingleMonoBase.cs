@@ -1,6 +1,10 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// 使用mono的单例需要继承此单例
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface where T : SingleMonoBase<T>
 {
     public static T Instance

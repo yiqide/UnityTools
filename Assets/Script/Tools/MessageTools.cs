@@ -12,7 +12,7 @@ public enum EReceiveMessage
     All
 }
 
-[Single(false)]
+[SingleScript(false)]
 public class MessageTools : SingleBase<MessageTools>
 {
     public void sds()

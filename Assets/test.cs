@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-[Single(false)]
+[SingleScript(false)]
 public class test : SingleMonoBase<test>
 {
     public Image _gameObject1;

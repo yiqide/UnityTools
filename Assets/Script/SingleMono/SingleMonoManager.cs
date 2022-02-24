@@ -10,7 +10,6 @@ public class SingleMonoManager : MonoBehaviour
     private void Awake()
     {
         if (initialized != null) return;
-        gameObject.name = "SingleMonoManager";
         initialized = this;
         FindAddScript();
     }
@@ -29,6 +28,7 @@ public class SingleMonoManager : MonoBehaviour
         if (initialized != null) return;
         GameObject go = new GameObject();
         go.AddComponent<SingleMonoManager>();
+        go.name = "SingleMonoManager";
     }
 
     private static void FindAddScript()
@@ -49,7 +49,7 @@ public class SingleMonoManager : MonoBehaviour
             {
                 if (!signType.Contains(item.FullName))
                 {
-                    var attribute= item.GetCustomAttribute<SingleAttribute>();
+                    var attribute= item.GetCustomAttribute<SingleScriptAttribute>();
                     if (attribute==null)
                     {
                         ISingleMonoInterface sin=(ISingleMonoInterface)initialized.gameObject.AddComponent(item);
@@ -79,7 +79,7 @@ public class SingleMonoManager : MonoBehaviour
             {
                 if (!signType.Contains(item.FullName))
                 {
-                    var attribute= item.GetCustomAttribute<SingleAttribute>();
+                    var attribute= item.GetCustomAttribute<SingleScriptAttribute>();
                     if (attribute == null)
                     {
                         ISingleInterface sin=(ISingleInterface) item.Assembly.CreateInstance(item.Name);

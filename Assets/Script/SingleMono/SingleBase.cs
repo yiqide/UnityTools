@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 使用非mono的单例继承此类
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class SingleBase<T> : ISingleInterface where T: SingleBase<T>
 {
     public static T Instance
