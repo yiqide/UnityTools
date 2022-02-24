@@ -86,4 +86,39 @@ public static class ExtensionFunction
 
         return res;
     }
+
+    #region 事件系统 --MessageManager
+
+    /// <summary>
+    /// 发送事件
+    /// </summary>
+    /// <param name="self">表明你的身份</param>
+    /// <param name="receiveType">接受者</param>
+    /// <param name="objects">发送的参数</param>
+    public static void SendEvent(this ISendEvent self,EReceiveType receiveType,params object[] objects)
+    {
+        if (self.SendType== ESendType.EAll)
+        {
+            Debug.LogWarning("发送者的类型无效：all");
+            return;
+        }
+        EventManager.Instance.SendEvent(self.SendType,receiveType,objects);
+    }
+
+    /// <summary>
+    /// 注册事件
+    /// </summary>
+    /// <param name="self">表明你的身份</param>
+    /// <param name="sendType">你想接受的那些发送至者发送的消息</param>
+    /// <param name="receiveAction">注册的方法</param>
+    public static void RegisterEvent(this IReceiveEvent self,ESendType sendType,Action<object[]> receiveAction)
+    {
+        if (self.ReceiveType==EReceiveType.EAll)
+        {
+            Debug.LogWarning("接受者的类型无效：all");
+            return;
+        }
+        EventManager.Instance.RegisterEvent(self.ReceiveType,sendType,receiveAction);
+    }
+    #endregion
 }

@@ -139,6 +139,9 @@ public class SingleMonoManager : MonoBehaviour
         }
     }
 }
+
+#region 接口
+
 public interface ISingleMonoInterface
 {
 }
@@ -146,3 +149,5 @@ public interface ISingleMonoInterface
 public interface ISingleInterface
 {
 }
+
+#endregion
