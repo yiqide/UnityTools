@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Framework.SingleMone;
 using UnityEngine;
 
-
-public class TimeTools : SingleMonoBase<TimeTools>
+namespace Framework.Tools
 {
-    private void Update()
+    public class TimeTools : SingleMonoBase<TimeTools>
     {
-        
+        private void Update()
+        {
+        }
     }
 }

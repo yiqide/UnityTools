@@ -1,80 +1,83 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Framework.SingleMone;
 
-public class CoroutineTools : SingleMonoBase<CoroutineTools>
+namespace Framework.Tools
 {
-
-    protected override void Awake()
+    public class CoroutineTools : SingleMonoBase<CoroutineTools>
     {
-        base.Awake();
-        StartCoroutine(ActionWithUnityMainThread());
-        StartCoroutine(ActionUnityMainThread());
-    }
-
-    private List<Func<bool>> _funcs = new List<Func<bool>>();
-    private Queue<Action> _actions = new Queue<Action>();
-
-    /// <summary>
-    /// action这个方法将会在unity的主线程上调用
-    /// </summary>
-    public void StartActionWithUnityMainThread(Action action)
-    {
-        lock (_actions)
+        protected override void Awake()
         {
-            _actions.Enqueue(action);
+            base.Awake();
+            StartCoroutine(ActionWithUnityMainThread());
+            StartCoroutine(ActionUnityMainThread());
         }
-    }
 
-    /// <summary>
-    /// 添加到里面到方法会每一帧执行一次，返回true后将不会在执行
-    /// </summary>
-    /// <param name="action"></param>
-    public void AddAction(Func<bool> action)
-    {
-        _funcs.Add(action);
-    }
-    
-    /// <summary>
-    /// 当state返回true时代表该任务已经结束了
-    /// </summary>
-    IEnumerator ActionUnityMainThread()
-    {
-        bool state = false;
-        while (true)
+        private List<Func<bool>> _funcs = new List<Func<bool>>();
+        private Queue<Action> _actions = new Queue<Action>();
+
+        /// <summary>
+        /// action这个方法将会在unity的主线程上调用
+        /// </summary>
+        public void StartActionWithUnityMainThread(Action action)
         {
-            int count = _funcs.Count;
-            for (int i = 0; i < count; i++)
+            lock (_actions)
             {
-                state = _funcs[i].Invoke();
-                if (state)
+                _actions.Enqueue(action);
+            }
+        }
+
+        /// <summary>
+        /// 添加到里面到方法会每一帧执行一次，返回true后将不会在执行
+        /// </summary>
+        /// <param name="action"></param>
+        public void AddAction(Func<bool> action)
+        {
+            _funcs.Add(action);
+        }
+
+        /// <summary>
+        /// 当state返回true时代表该任务已经结束了
+        /// </summary>
+        IEnumerator ActionUnityMainThread()
+        {
+            bool state = false;
+            while (true)
+            {
+                int count = _funcs.Count;
+                for (int i = 0; i < count; i++)
                 {
-                    _funcs.Remove(_funcs[i]);
-                    i--;
-                    count -= 1;
+                    state = _funcs[i].Invoke();
+                    if (state)
+                    {
+                        _funcs.Remove(_funcs[i]);
+                        i--;
+                        count -= 1;
+                    }
+
+                    yield return null;
                 }
 
                 yield return null;
             }
-
-            yield return null;
         }
-    }
 
-    IEnumerator ActionWithUnityMainThread()
-    {
-        while (true)
+        IEnumerator ActionWithUnityMainThread()
         {
-            if (_actions.Count != 0)
+            while (true)
             {
-                lock (_actions)
+                if (_actions.Count != 0)
                 {
-                    var action = _actions.Dequeue();
-                    action.Invoke();
+                    lock (_actions)
+                    {
+                        var action = _actions.Dequeue();
+                        action.Invoke();
+                    }
                 }
-            }
 
-            yield return null;
+                yield return null;
+            }
         }
     }
 }
