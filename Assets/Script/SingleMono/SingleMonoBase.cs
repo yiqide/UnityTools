@@ -1,32 +1,53 @@
 using UnityEngine;
 
-public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface where T : SingleMonoBase<T>
+namespace Framework.SingleMone
 {
-    public static T Instance
+    /// <summary>
+    /// 使用mono的单例需要继承此单例
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class SingleMonoBase<T> : MonoBehaviour, ISingleMonoInterface where T : SingleMonoBase<T>
     {
-        get
+        public static T Instance
         {
-            if (SingleMonoManager.Instance == null) SingleMonoManager.Init();
+            get
+            {
+                if (SingleMonoManager.Instance == null) SingleMonoManager.Init();
+                if (instance == null)
+                {
+                    //启动对应的实例化
+                    SingleMonoManager.Sign(typeof(T));
+                    SingleMonoManager.InstantiationMonoTarget<T>();
+                }
+
+                return instance;
+            }
+        }
+
+        private static T instance;
+
+        /// <summary>
+        /// 将会在实例化的时候调用,在Unity Awake方法之后调用
+        /// </summary>
+        protected void Init()
+        {
+            if (instance != null) return;
+            SingleMonoManager.Sign(GetType());
+            instance = (T) this;
+        }
+
+        protected virtual void Awake()
+        {
             if (instance == null)
             {
-                Debug.LogError(Instance.GetType() + "是空的，意料之外的错误");
+                SingleMonoManager.Sign(GetType());
+                instance = (T) this;
             }
-            return instance;
+            else
+            {
+                Destroy(this);
+                Debug.LogWarning("你在场景中已经添加了重复的单例，已经销毁了");
+            }
         }
     }
-    private static T instance;
-
-    /// <summary>
-    /// 将会在实例化的时候调用,在Awake方法之后调用
-    /// </summary>
-    public virtual void Init()
-    {
-        if (instance != null)
-        {
-            Debug.LogWarning("你不能自己调用这个方法");
-            return;
-        }
-        instance = (T)this;
-    }
-    
 }
