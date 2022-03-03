@@ -1,3 +1,4 @@
+using Framework.Interfase;
 using UnityEngine;
 
 namespace Framework.SingleMone

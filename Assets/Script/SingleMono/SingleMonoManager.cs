@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Framework.Interfase;
 using UnityEngine;
 
 namespace Framework.SingleMone
@@ -148,16 +149,4 @@ namespace Framework.SingleMone
             }
         }
     }
-
-    #region 接口
-
-    public interface ISingleMonoInterface
-    {
-    }
-
-    public interface ISingleInterface
-    {
-    }
-
-    #endregion
 }

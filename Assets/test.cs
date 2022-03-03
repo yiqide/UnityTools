@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Framework.Interfase;
 using Framework.Setting;
 using Framework.SingleMone;
 using Framework.Tools;

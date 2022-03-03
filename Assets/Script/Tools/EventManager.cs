@@ -77,24 +77,4 @@ namespace Framework.Tools
             }
         }
     }
-
-    #region 接口
-
-    public interface ISendEvent
-    {
-        /// <summary>
-        /// 作为发送者的类型
-        /// </summary>
-        public ESendType SendType { get; }
-    }
-
-    public interface IReceiveEvent
-    {
-        /// <summary>
-        /// 作为接受者的类型
-        /// </summary>
-        public EReceiveType ReceiveType { get; }
-    }
-
-    #endregion
 }
