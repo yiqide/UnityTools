@@ -15,7 +15,14 @@ public class test2: EditorWindow
     }
     private void OnGUI()
     {
-        
+        Rect rect = new Rect(0,0,100,300);
+        DragAndDropTool.CreationDragAndDropArea(rect,(string[] strings) =>
+        {
+            foreach (var item in strings)
+            {
+                Debug.Log(item);
+            }
+        });
     }
 
     [MenuItem("Assets/创建AB包")]
