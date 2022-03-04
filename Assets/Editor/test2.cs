@@ -13,16 +13,27 @@ public class test2: EditorWindow
     {
         GetWindow<test2>().Show();
     }
+
+    private Vector2 pos=new Vector2();
     private void OnGUI()
     {
-        Rect rect = new Rect(0,0,100,300);
-        DragAndDropTool.CreationDragAndDropArea(rect,(string[] strings) =>
-        {
-            foreach (var item in strings)
-            {
-                Debug.Log(item);
-            }
-        });
+        pos= GUILayout.BeginScrollView(pos,  true,true);
+        GUILayout.BeginHorizontal();
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.EndHorizontal();
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.Button("你好");
+        GUILayout.EndScrollView();
+
     }
 
     [MenuItem("Assets/创建AB包")]

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 //拖拽工具
-public static class DragAndDropTool
+public  class DragAndDropTool: EditorWindow
 {
     /// <summary>
     /// 创建一个拖拽区域
