@@ -5,6 +5,6 @@ using UnityEngine;
 
 public abstract class BaseEditorWindow<T> :EditorWindow where T :  EditorWindow
 {
-    protected int WindowHeight => Screen.height/2-10 <=0 ? 0:Screen.height/2-10;
-    protected int WindowWidth => Screen.width/2-10 <=0 ? 0:Screen.width/2-10;
+    protected float WindowHeight => position.size.y-10 <=0 ? 0: position.size.y-10;
+    protected float WindowWidth => position.size.x-10 <=0 ? 0:position.size.x-10;
 }

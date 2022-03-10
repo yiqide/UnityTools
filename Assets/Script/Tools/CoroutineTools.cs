@@ -43,6 +43,7 @@ namespace Framework.Tools
         IEnumerator ActionUnityMainThread()
         {
             bool state = false;
+            int returnCount = 0;
             while (true)
             {
                 int count = _funcs.Count;
@@ -55,10 +56,14 @@ namespace Framework.Tools
                         i--;
                         count -= 1;
                     }
-
-                    yield return null;
+                    returnCount++;
+                    if (returnCount>=10)
+                    {
+                        returnCount = 0;
+                        yield return null;
+                    }
                 }
-
+                returnCount = 0;
                 yield return null;
             }
         }
