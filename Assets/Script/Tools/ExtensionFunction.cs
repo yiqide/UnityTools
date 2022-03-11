@@ -53,6 +53,25 @@ namespace Framework.Tools
             RenderTexture.ReleaseTemporary(tmp);
             return myTexture2D;
         }
+        
+        /// <summary>
+        /// 相对于SetActive有一定的优化效果
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="value"></param>
+        public static void SetActiveExtension(this GameObject gameObject,bool value)
+        {
+            if (value&&!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+                return;
+            }
+
+            if (!value&&gameObject.activeSelf)
+            {
+                gameObject.SetActive(false);
+            }
+        }
 
         /// <summary>
         /// 将texture2D转换成Sprite
