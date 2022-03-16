@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace Framework.Tools
 {
@@ -59,6 +61,43 @@ namespace Framework.Tools
             fileStream.Close();
             fileStream.Dispose();
             return bytes;
+        }
+        
+        public static List<string> GetAllFile(string path)
+        {
+            List<string> list = new List<string>();
+            list.AddRange(Directory.GetFiles(path));
+            foreach (var item in GetAllDirectory(path))
+            {
+                list.AddRange(Directory.GetFiles(item));
+            }
+
+            return list;
+            
+        }
+
+        /// <summary>
+        /// 递归获取所有目标文件下的所有文件夹
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static List<string> GetAllDirectory(string path)
+        {
+            List<string> list = new List<string>();
+            GetChildDirectory(path, ref list);
+            return list;
+        }
+        
+        private static void GetChildDirectory(string path,ref List<string> directoryPaths)
+        {
+            if (Directory.Exists(path))
+            {
+                foreach (var item in Directory.GetDirectories(path))
+                {
+                    directoryPaths.Add(item);
+                    GetChildDirectory(item,ref directoryPaths);
+                }
+            }
         }
     }
 }

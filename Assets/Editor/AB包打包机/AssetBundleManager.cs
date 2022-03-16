@@ -160,10 +160,27 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
             if (Directory.Exists(item))
             {
                 //对象是个文件夹
+                var list= FileTools.GetAllFile(item);
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (Path.GetFileName( list[i]).Contains(".meta")||Path.GetFileName( list[i]).Contains(".cs"))
+                    {
+                        list.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                foreach (var itemFile in list)
+                {
+                    selectPkg.AddABAsset(itemFile);
+                }
             }
             else
             {
-                selectPkg.AddABAsset(item);
+                if (!Path.GetFileName(item).Contains(".cs"))
+                {
+                    selectPkg.AddABAsset(item);
+                }
             }
         }
         Save();
