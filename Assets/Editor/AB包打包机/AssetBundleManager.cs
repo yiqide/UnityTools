@@ -95,6 +95,11 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
 
                 for (int i = 0; i < pkgs.Count; i++)
                 {
+                    if (!File.Exists(pkgs[i].path))
+                    {
+                        selectPkg.ReMoveAsset(pkgs[i].path);
+                        Save();
+                    }
                     GUI.Box(new Rect(box3.x, box3.y + i * 25, 20, 20), pkgs[i].GeIcon());
                     if (file)
                     {
