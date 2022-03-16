@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -5,63 +6,71 @@ using UnityEditor;
 using UnityEngine;
 
 
-
+[Serializable]
 public class ABAsset
 {
-    public string path;
-    public Texture2D GeIcon => (Texture2D)AssetDatabase.GetCachedIcon(path);
+    public string path="";
+    public Texture2D GeIcon()
+    {
+        return (Texture2D)AssetDatabase.GetCachedIcon(path);
+    }
 
     public ABAsset(string path)
     {
         this.path = path;
     }
-}
 
+    public string GetFileName()
+    {
+        string str;
+        str = Path.GetFileName(path);
+        return str;
+    }
+}
+[Serializable]
 public class Pkg
 {
     public string pkgName="";
-    public List<string> dirs=new List<string>();
-    
-    private List<ABAsset> otherAllAB = new List<ABAsset>();
 
-    public void addDir(string path)
+    public List<ABAsset> AllAB = new List<ABAsset>();
+
+    public string[] GetAllAbStringArray()
     {
-        if (Directory.Exists(path)&&!dirs.Contains(path))
+        List<string> list = new List<string>();
+        foreach (var item in AllAB)
         {
-            dirs.Add(path);
+            list.Add(item.path);
         }
+        return list.ToArray();
     }
 
-    public void addABAsset(string path)
+    public void AddABAsset(string path)
     {
-        foreach (var item in  all())
+        foreach (var item in  AllAB)
         {
             if (item.path==path)
             {
                 return;
             }
         }
-        otherAllAB.Add(new ABAsset(path));
+        AllAB.Add(new ABAsset(path));
     }
 
-    public List<ABAsset> all()
+    public void ReMoveAsset(string path)
     {
-        var  all =new List<ABAsset>();
-        all.AddRange(otherAllAB);
-        foreach (var item in dirs)
+        ABAsset asset=null;
+        foreach (var item in  AllAB)
         {
-           var files= Directory.GetFiles(item);
-           foreach (var VARIABLE in files)
-           {
-               if (VARIABLE.Contains(".meta"))
-               {
-                   continue;
-               }
-               all.Add(new ABAsset(VARIABLE));
-           }
+            if (item.path==path)
+            {
+                asset = item;
+                break;
+            }
         }
 
-        return all;
+        if (asset!=null)
+        {
+            AllAB.Remove(asset);
+        }
     }
-
 }

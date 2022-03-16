@@ -1,8 +1,14 @@
 [
   {
-    "pkgName": "",
-    "dirs": [
-      "Assets/Editor/AB包打包机"
+    "pkgName": "123",
+    "AllAB": [
+      {
+        "path": "Assets/0a1387faee477c83080c0ce5e5fa5055.mov"
+      }
     ]
+  },
+  {
+    "pkgName": "",
+    "AllAB": []
   }
 ]
