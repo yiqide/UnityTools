@@ -63,6 +63,11 @@ namespace Framework.Tools
             return bytes;
         }
         
+        /// <summary>
+        /// 递归获取目标路径下的所有文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static List<string> GetAllFile(string path)
         {
             List<string> list = new List<string>();

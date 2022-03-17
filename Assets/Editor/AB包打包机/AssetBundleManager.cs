@@ -186,7 +186,6 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
         Save();
     }
     
-
     private void BuildAllAssetBundles()
     {
 
