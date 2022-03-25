@@ -16,6 +16,7 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
 {
     void Start()
     {
+        /*
         LTow lTow = new LTow();
         lTow.en = "Get abundant rewards by completing special levels within the event time. Enjoy Easter Day with your friends!";
         lTow.zh = "在活动时间内完成对应活动关卡，获得丰厚奖励，与好友欢度复活节的美好时光吧！";
@@ -30,7 +31,7 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
         lTow.es = "Obtenga abundantes recompensas completando niveles especiales dentro del tiempo del evento. ¡Disfruta del día de Pascua con tus amigos!";
         FileTools.WriteFile("/Users/ddw/Downloads/text.txt",SerializeTools.ObjToString(lTow));
         return;
-        /*
+    
         LTow lTow = new LTow();
         lTow.en = "Find Your Easter Egg";
         lTow.zh = "复活节彩蛋来袭";

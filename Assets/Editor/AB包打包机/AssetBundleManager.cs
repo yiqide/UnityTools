@@ -18,6 +18,8 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
     private string outpath = "";
     private bool an;
     private bool ios;
+    private bool stadia;
+    private bool noTarget;
     private bool file;
     private void OnGUI()
     {
@@ -44,6 +46,8 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
         
         an=GUI.Toggle(new Rect(610,25,80,20),an,"安卓打包");
         ios=GUI.Toggle(new Rect(690,25,80,20),ios,"IOS打包");
+        stadia=GUI.Toggle(new Rect(780,25,80,20),stadia,"Stadia打包");
+        noTarget=GUI.Toggle(new Rect(860,25,100,20),noTarget,"NoTarget打包");
         
         {
             GUI.Box(box1, "");
@@ -222,6 +226,26 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
                 }
                 BuildPipeline.BuildAssetBundles(outpath + "/IOS", new []{assetBundleBuild},
                     BuildAssetBundleOptions.None,BuildTarget.iOS);
+            }
+            if (stadia)
+            {
+                if (!Directory.Exists(  outpath + "/Stadia"))
+                {
+                    Directory.CreateDirectory(outpath + "/Stadia");
+                }
+            
+                BuildPipeline.BuildAssetBundles(outpath + "/Android", new []{assetBundleBuild},
+                    BuildAssetBundleOptions.None,BuildTarget.Stadia);
+            }
+            if (noTarget)
+            {
+                if (!Directory.Exists(  outpath + "/NoTarget"))
+                {
+                    Directory.CreateDirectory(outpath + "/NoTarget");
+                }
+            
+                BuildPipeline.BuildAssetBundles(outpath + "/Android", new []{assetBundleBuild},
+                    BuildAssetBundleOptions.None,BuildTarget.NoTarget);
             }
         }
         

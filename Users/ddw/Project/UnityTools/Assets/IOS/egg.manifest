@@ -1,0 +1,48 @@
+ManifestFileVersion: 0
+CRC: 1816506349
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: a250036b8eac5919864d386f71a80461
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 06fa276bb87bd8e78e4c70d80aa10f10
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- "Assets/\u590D\u6D3B\u8282/Egg_particular.prefab"
+- "Assets/\u590D\u6D3B\u8282/twink star.mat"
+- "Assets/\u590D\u6D3B\u8282/\u65B0\u5EFA\u6750\u8D28.mat"
+- "Assets/\u590D\u6D3B\u8282/Coin_lizi.prefab"
+- "Assets/\u590D\u6D3B\u8282/Cube.prefab"
+- "Assets/\u590D\u6D3B\u8282/eff_par_1_add.mat"
+- "Assets/\u590D\u6D3B\u8282/par_1.tga"
+- "Assets/\u590D\u6D3B\u8282/star2_0.png"
+Dependencies: []
