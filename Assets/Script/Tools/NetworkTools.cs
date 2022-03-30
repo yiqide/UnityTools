@@ -9,27 +9,32 @@ namespace Framework.Tools
 {
     public static class NetworkTools
     {
+        #region 开放的信息
         //下载系统
-        public static int TaskCount => _tasks.Count;
-        private static readonly object LockMe = new object();
-        private static List<Task> _tasks = new List<Task>();
+        public static int WaitTaskCount => tasks.Count;
 
         /// <summary>
         /// 当前下载器的数量
         /// </summary>
         public static int DownloaderCount => coroutines.Count;
-
-        private static List<Coroutine> coroutines = new List<Coroutine>();
-
+        
         /// <summary>
         /// 下载成功的任务 UnityWebRequest 是null
         /// 下载失败的任务将会从里面移除
         /// string-任务名称  UnityWebRequest-下载对象
         /// </summary>
-        public static Dictionary<string, UnityWebRequest> TasksSchedule => _tasksSchedule;
-
-        private static readonly Dictionary<string, UnityWebRequest> _tasksSchedule =
-            new Dictionary<string, UnityWebRequest>();
+        public static Dictionary<string, UnityWebRequest> TasksSchedule => tasksSchedule;
+        
+        #endregion
+        private static readonly object LockMe = new object();
+        //等待下载的列表
+        private static List<Task> tasks = new List<Task>();
+        //下载中的列表
+        private static List<Task> dowingTasks = new List<Task>();
+        
+        private static List<Coroutine> coroutines = new List<Coroutine>();
+        
+        private static readonly Dictionary<string, UnityWebRequest> tasksSchedule = new Dictionary<string, UnityWebRequest>();
 
         /// <summary>
         /// action会在任务完成时执行
@@ -40,9 +45,22 @@ namespace Framework.Tools
         public static void AddTask(string filePath, string url, Action<bool> callBackAction = null)
         {
             if (DownloaderCount == 0) AddDownloader(1);
+            AddTask(new Task(filePath, url, callBackAction));
+        }
+
+        private static void AddTask(Task task)
+        {
+            if (DownloaderCount == 0) AddDownloader(1);
             lock (LockMe)
             {
-                _tasks.Add(new Task(filePath, url, callBackAction));
+                foreach (var item in dowingTasks)
+                {
+                    if ( item.key==task.key)
+                    {
+                        return;
+                    }
+                }
+                tasks.Add(task);
             }
         }
 
@@ -78,7 +96,7 @@ namespace Framework.Tools
                         }
                     }
                 });
-                _tasks.Add(task);
+                AddTask(task);
             }
         }
 
@@ -103,21 +121,23 @@ namespace Framework.Tools
             string taskName;
             while (true)
             {
-                if (_tasks.Count != 0)
+                if (tasks.Count != 0)
                 {
-                    url = _tasks[0].value;
-                    filepath = _tasks[0].key;
-                    action = _tasks[0].Action;
-                    _tasks.RemoveAt(0);
+                    Task task = tasks[0];
+                    url = task.value;
+                    filepath = task.key;
+                    action = task.Action;
+                    dowingTasks.Add(task);
+                    tasks.Remove(task);
                     UnityWebRequest request = UnityWebRequest.Get(url);
                     taskName = filepath;
-                    if (!_tasksSchedule.TryAdd(taskName, request))
+                    if (!tasksSchedule.TryAdd(taskName, request))
                     {
                         int ls = 1;
                         while (true)
                         {
                             taskName = filepath + ls;
-                            if (!_tasksSchedule.TryAdd(taskName, request))
+                            if (!tasksSchedule.TryAdd(taskName, request))
                             {
                                 ls++;
                             }
@@ -129,47 +149,43 @@ namespace Framework.Tools
                     }
 
                     string savePath = Path.GetDirectoryName(filepath);
-                    if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
-
+                    if (!string.IsNullOrEmpty(savePath)&&!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
                     yield return request.SendWebRequest();
-                    for (int i = 0; i < 3; i++)
+
+                    if (request.isDone && string.IsNullOrEmpty(request.error))
                     {
-                        if (request.isDone && string.IsNullOrEmpty(request.error))
+                        using (FileStream fs = new FileStream(filepath, FileMode.OpenOrCreate))
                         {
-                            using (FileStream fs = new FileStream(filepath, FileMode.OpenOrCreate))
-                            {
-                                fs.SetLength(0);
-                                data = request.downloadHandler.data;
-                                fs.Write(data, 0, data.Length);
-                            }
-
-                            Debug.Log("下载完成");
-                            action?.Invoke(true);
-                            break;
+                            fs.SetLength(0);
+                            data = request.downloadHandler.data;
+                            fs.Write(data, 0, data.Length);
                         }
 
-                        if (i == 2)
+                        Debug.Log("下载完成");
+                        dowingTasks.Remove(task);
+                        action?.Invoke(true);
+                    }
+                    else
+                    {
+                        Debug.Log("下载失败");
+                        Debug.LogWarning(request.error);
+                        try
                         {
-                            Debug.Log("下载失败");
-                            Debug.LogWarning(request.error);
-                            try
-                            {
-                                File.Delete(filepath);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogWarning(e);
-                            }
-
-                            action?.Invoke(false);
-                            _tasksSchedule.Remove(taskName);
+                            File.Delete(filepath);
                         }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning(e);
+                        }
+
+                        dowingTasks.Remove(task);
+                        tasksSchedule.Remove(taskName);
+                        action?.Invoke(false);
                     }
 
-                    _tasksSchedule[taskName] = null;
+                    tasksSchedule[taskName] = null;
                     request.Dispose();
                 }
-
                 yield return null;
             }
         }
