@@ -2,7 +2,11 @@
   "pkgName": [
     {
       "pkgName": "sdada",
-      "AllAB": []
+      "AllAB": [
+        {
+          "path": "Assets/Editor/AB包打包机/data.json"
+        }
+      ]
     },
     {
       "pkgName": "",

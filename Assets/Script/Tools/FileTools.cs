@@ -66,10 +66,15 @@ namespace Framework.Tools
         /// <summary>
         /// 递归获取目标路径下的所有文件
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">路径必须是文件夹的路径</param>
         /// <returns></returns>
         public static List<string> GetAllFile(string path)
         {
+            if (!Directory.Exists(path))
+            {
+                Debug.LogError("不存在的文件夹："+path);
+                return null;
+            }
             List<string> list = new List<string>();
             list.AddRange(Directory.GetFiles(path));
             foreach (var item in GetAllDirectory(path))

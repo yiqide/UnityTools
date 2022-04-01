@@ -131,6 +131,7 @@ public class AssetBundleManager: BaseEditorWindow<AssetBundleManager>
                         continue;
                     }
                     GUI.Box(new Rect(box3.x, box3.y + i * 25, 20, 20), pkgs[i].GeIcon());
+                    
                     if (file)
                     {
                         EditorGUI.LabelField(new Rect(box3.x + 20, box3.y + i * 25, box3.width - 70, 20), pkgs[i].GetFileName());
