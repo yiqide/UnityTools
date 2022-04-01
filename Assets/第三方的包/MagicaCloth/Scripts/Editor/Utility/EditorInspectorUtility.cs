@@ -457,10 +457,10 @@ namespace MagicaCloth
                     switch (algoType)
                     {
                         case ClothParams.Algorithm.Algorithm_1:
-                            EditorGUILayout.HelpBox("This algorithm is deprecated.\nPlease use the more stable algorithm 2.\nAlgorithm 1 will be removed in the future.", MessageType.Warning);
+                            EditorGUILayout.HelpBox("此算法已被弃用。\n请使用更稳定的算法 2.\n算法1将在以后被删除。", MessageType.Warning);
                             break;
                         case ClothParams.Algorithm.Algorithm_2:
-                            EditorGUILayout.HelpBox("Algorithm 2 was introduced from v1.11.0.\nClampRotation / RestoreRotation / TriangleBend will be more stable.\nHowever, the parameters need to be readjusted.", MessageType.Info);
+                            EditorGUILayout.HelpBox("算法2从v1.11.0引入。\nClampRotation / RestoreRotation / TriangleBend will be more stable.\nHowever, the parameters need to be readjusted.", MessageType.Info);
                             break;
                     }
 
@@ -483,7 +483,7 @@ namespace MagicaCloth
                             EditorGUILayout.Space();
                         }
                         EditorGUILayout.Space();
-                        EditorGUILayout.HelpBox("Parameters of old algorithms can be converted to the latest algorithms.\nNote, however, that the same parameter may work slightly differently depending on the algorithm.", MessageType.Info);
+                        EditorGUILayout.HelpBox("旧算法的参数可以转换为最新的算法.\n但是，请注意，相同的参数的工作方式可能会因算法的不同而略有不同.", MessageType.Info);
                         EditorGUILayout.Space();
                         EditorGUI.EndDisabledGroup();
                     }
@@ -524,11 +524,11 @@ namespace MagicaCloth
                 {
                     EditorGUILayout.PropertyField(influenceTarget);
                     EditorGUILayout.Slider(maxSpeed, 0.0f, 20.0f, "Max Move Speed");
-                    EditorGUILayout.LabelField("Movement Influence");
+                    EditorGUILayout.LabelField("运动的影响");
                     BezierInspector("Move Influence", moveInfluence, 0.0f, 1.0f);
 
                     EditorGUILayout.Slider(maxRotationSpeed, 0.0f, 720.0f, "Max Rotation Speed");
-                    EditorGUILayout.LabelField("Rotation Influence");
+                    EditorGUILayout.LabelField("旋转的影响");
                     BezierInspector("Rotation Influence", rotInfluence, 0.0f, 1.0f);
 
                     useTeleport.boolValue = EditorGUILayout.Toggle("Reset After Teleport", useTeleport.boolValue);
@@ -606,11 +606,11 @@ namespace MagicaCloth
                     //EditorGUILayout.Slider(massInfluence, 0.0f, 1.0f, "Mass Influence");
                     //EditorGUILayout.LabelField("Wind");
                     EditorGUILayout.LabelField("Depth Influence");
-                    BezierInspector("Depth Influence", depthInfluence, 0.0f, 1.0f, "F2");
+                    BezierInspector("Depth Influence(深度影响)", depthInfluence, 0.0f, 1.0f, "F2");
                     EditorGUILayout.Space();
-                    EditorGUILayout.Slider(windInfluence, 0.0f, 2.0f, "Wind Influence");
-                    EditorGUILayout.Slider(windSynchronization, 0.0f, 1.0f, "Wind Synchronization");
-                    EditorGUILayout.Slider(windRandomScale, 0.0f, 1.0f, "Wind Random Scale");
+                    EditorGUILayout.Slider(windInfluence, 0.0f, 2.0f, "Wind Influence(风的影响)");
+                    EditorGUILayout.Slider(windSynchronization, 0.0f, 1.0f, "Wind Synchronization(风的同步性)");
+                    EditorGUILayout.Slider(windRandomScale, 0.0f, 1.0f, "风随机变化");
                 }
                 );
 
@@ -644,16 +644,16 @@ namespace MagicaCloth
             GetBezierValue(gravity, out sv, out ev, out cv);
 
             StaticStringBuilder.Clear();
-            StaticStringBuilder.Append("Gravity", " [", sv, "/", ev, "]");
+            StaticStringBuilder.Append("Gravity(重力)", " [", sv, "/", ev, "]");
 
             bool wuse = useGravity.boolValue;
             Foldout("Gravity", StaticStringBuilder.ToString(),
                 () =>
                 {
                     EditorGUI.BeginDisabledGroup(!wuse);
-                    EditorGUILayout.LabelField("Gravity Acceleration");
-                    BezierInspector("Gravity", gravity, -10.0f, 0.0f, "F2");
-                    EditorGUILayout.PropertyField(gravityDirection, true);
+                    EditorGUILayout.LabelField("Gravity Acceleration(重力加速度)");
+                    BezierInspector("Gravity(重力)", gravity, -10.0f, 0.0f, "F2");
+                    EditorGUILayout.PropertyField(gravityDirection,new GUIContent("重力的方向"), true);
 
                     //useDirectional.boolValue = EditorGUILayout.Toggle("Directional Damping", useDirectional.boolValue);
                     //refObject.objectReferenceValue = EditorGUILayout.ObjectField("Reference Object", refObject.objectReferenceValue, typeof(Transform), true);
@@ -1013,16 +1013,16 @@ namespace MagicaCloth
 
             const string title = "Clamp Distance";
             StaticStringBuilder.Clear();
-            StaticStringBuilder.Append("Clamp Distance", " [", minRatio.floatValue, "/", maxRatio.floatValue, "]");
+            StaticStringBuilder.Append("Clamp Distance(固定距离)", " [", minRatio.floatValue, "/", maxRatio.floatValue, "]");
 
             Foldout(title, StaticStringBuilder.ToString(),
                 () =>
                 {
                     EditorGUI.BeginDisabledGroup(!use.boolValue);
 
-                    EditorGUILayout.Slider(minRatio, 0.0f, 1.0f, "Min Distance Ratio");
-                    EditorGUILayout.Slider(maxRatio, 1.0f, 2.0f, "Max Distance Ratio");
-                    EditorGUILayout.Slider(influence, 0.0f, 1.0f, "Velocity Influence");
+                    EditorGUILayout.Slider(minRatio, 0.0f, 1.0f, "Min Distance Ratio(最小距离百分比)");
+                    EditorGUILayout.Slider(maxRatio, 1.0f, 2.0f, "Max Distance Ratio(最大距离百分比)");
+                    EditorGUILayout.Slider(influence, 0.0f, 1.0f, "Velocity Influence(速度的影响)");
 
                     EditorGUI.EndDisabledGroup();
                 },
@@ -1053,18 +1053,18 @@ namespace MagicaCloth
             var nearMaxDepth = cparam.FindPropertyRelative("nearDistanceMaxDepth");
 
             const string title = "Restore Distance";
-            Foldout(title, title,
+            Foldout(title, title+"(恢复距离)",
                 () =>
                 {
-                    EditorGUILayout.LabelField("Struct Point [Always ON]");
+                    EditorGUILayout.LabelField("Struct Point [Always ON](结构点)");
 
-                    EditorGUILayout.LabelField("Struct Stiffness");
-                    BezierInspector("Struct Stiffness", structStiffness, 0.0f, 1.0f);
+                    EditorGUILayout.LabelField("Struct Stiffness(结构刚度)");
+                    BezierInspector("Struct Stiffness(结构刚度)", structStiffness, 0.0f, 1.0f);
 
-                    useBend.boolValue = EditorGUILayout.Toggle("Bend Point", useBend.boolValue);
-                    EditorGUILayout.IntSlider(bendMaxCount, 1, 6, "Bend Max Connection");
-                    EditorGUILayout.LabelField("Bend Stiffness");
-                    BezierInspector("Bend Stiffness", bendStiffness, 0.0f, 1.0f);
+                    useBend.boolValue = EditorGUILayout.Toggle("Bend Point(屈服点)", useBend.boolValue);
+                    EditorGUILayout.IntSlider(bendMaxCount, 1, 6, "Bend Max Connection(最大的屈服链接)");
+                    EditorGUILayout.LabelField("Bend Stiffness(屈服刚度)");
+                    BezierInspector("Bend Stiffness(屈服刚度)", bendStiffness, 0.0f, 1.0f);
 
                     useNear.boolValue = EditorGUILayout.Toggle("Near Point", useNear.boolValue);
                     EditorGUILayout.IntSlider(nearMaxCount, 1, 6, "Near Max Connection");

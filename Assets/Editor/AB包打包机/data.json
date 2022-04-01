@@ -1,31 +1,13 @@
-[
-  {
-    "pkgName": "egg",
-    "AllAB": [
-      {
-        "path": "Assets/复活节/Coin_lizi.prefab"
-      },
-      {
-        "path": "Assets/复活节/Egg_particular.prefab"
-      },
-      {
-        "path": "Assets/复活节/eff_par_1_add.mat"
-      },
-      {
-        "path": "Assets/复活节/par_1.tga"
-      },
-      {
-        "path": "Assets/复活节/star2_0.png"
-      },
-      {
-        "path": "Assets/复活节/twink star.mat"
-      },
-      {
-        "path": "Assets/复活节/Cube.prefab"
-      },
-      {
-        "path": "Assets/复活节/新建材质.mat"
-      }
-    ]
-  }
-]
+{
+  "pkgName": [
+    {
+      "pkgName": "sdada",
+      "AllAB": []
+    },
+    {
+      "pkgName": "",
+      "AllAB": []
+    }
+  ],
+  "path": "/Users/ddw/Project/UnityTools/你好"
+}

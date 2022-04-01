@@ -187,7 +187,7 @@ namespace MagicaCloth
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("updateMode"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("updateMode"),new GUIContent("更新模式") );
             EditorGUILayout.Slider(serializedObject.FindProperty("userBlendWeight"), 0.0f, 1.0f, "Blend Weight");
         }
 
@@ -197,7 +197,7 @@ namespace MagicaCloth
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Culling", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("剔除", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("cullingMode"));
             if (scr is MagicaBoneCloth || scr is MagicaBoneSpring)
             {
@@ -206,7 +206,7 @@ namespace MagicaCloth
                     // warning
                     if (scr.GetCullRenderListCount() == 0)
                     {
-                        EditorGUILayout.HelpBox("If you want to cull, you need to register the renderer that makes the display decision here.\nIf not registered, culling will not be performed.", MessageType.Warning);
+                        EditorGUILayout.HelpBox("如果您想进行筛选，您需要注册在这里决定显示的渲染器.\n如果未注册，将不会执行剔除操作", MessageType.Warning);
                     }
 
                     //EditorGUILayout.PropertyField(serializedObject.FindProperty("cullRendererList"));
@@ -324,7 +324,7 @@ namespace MagicaCloth
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Skinning", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(mode, new GUIContent("Skinning Mode"), true);
+            EditorGUILayout.PropertyField(mode, new GUIContent("皮肤模式"), true);
             //if (scr.SkinningMode == PhysicsTeam.TeamSkinningMode.GenerateFromBones)
             //{
             //    var updateFixed = serializedObject.FindProperty("skinningUpdateFixed");

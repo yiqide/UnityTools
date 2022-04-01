@@ -50,6 +50,7 @@ public class Pkg
         {
             if (item.path==path)
             {
+                Debug.LogWarning("文件已在列表中存在:"+item.path);
                 return;
             }
         }
