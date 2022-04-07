@@ -19,13 +19,14 @@ namespace Framework.Tools
         public static int DownloaderCount => coroutines.Count;
         
         /// <summary>
-        /// 下载成功的任务 UnityWebRequest 是null
-        /// 下载失败的任务将会从里面移除
+        /// 当前正在下载的任务
+        /// 下载失败的任务将会从里面移除,下载成功的也会移除
         /// string-任务名称  UnityWebRequest-下载对象
         /// </summary>
         public static Dictionary<string, UnityWebRequest> TasksSchedule => tasksSchedule;
         
         #endregion
+        
         private static readonly object LockMe = new object();
         //等待下载的列表
         private static List<Task> tasks = new List<Task>();
@@ -54,6 +55,14 @@ namespace Framework.Tools
             lock (LockMe)
             {
                 foreach (var item in dowingTasks)
+                {
+                    if ( item.key==task.key)
+                    {
+                        return;
+                    }
+                }
+
+                foreach (var item in tasks)
                 {
                     if ( item.key==task.key)
                     {
@@ -147,11 +156,9 @@ namespace Framework.Tools
                             }
                         }
                     }
-
                     string savePath = Path.GetDirectoryName(filepath);
                     if (!string.IsNullOrEmpty(savePath)&&!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
                     yield return request.SendWebRequest();
-
                     if (request.isDone && string.IsNullOrEmpty(request.error))
                     {
                         using (FileStream fs = new FileStream(filepath, FileMode.OpenOrCreate))
@@ -160,7 +167,6 @@ namespace Framework.Tools
                             data = request.downloadHandler.data;
                             fs.Write(data, 0, data.Length);
                         }
-
                         Debug.Log("下载完成");
                         dowingTasks.Remove(task);
                         action?.Invoke(true);
@@ -182,9 +188,8 @@ namespace Framework.Tools
                         tasksSchedule.Remove(taskName);
                         action?.Invoke(false);
                     }
-
-                    tasksSchedule[taskName] = null;
                     request.Dispose();
+                    tasksSchedule.Remove(taskName);
                 }
                 yield return null;
             }

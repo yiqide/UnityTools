@@ -16,6 +16,7 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
 {
     void Start()
     {
+        return;
         /*
         LTow lTow = new LTow();
         lTow.en = "Get abundant rewards by completing special levels within the event time. Enjoy Easter Day with your friends!";
