@@ -452,7 +452,7 @@ namespace MagicaCloth
                 () =>
                 {
                     EditorGUI.BeginDisabledGroup(isPlaying);
-                    EditorGUILayout.PropertyField(algo, new GUIContent("Algorithm"));
+                    EditorGUILayout.PropertyField(algo, new GUIContent("算法"));
                     EditorGUI.EndDisabledGroup();
                     switch (algoType)
                     {
@@ -472,9 +472,9 @@ namespace MagicaCloth
                         using (var horizontalScope = new GUILayout.HorizontalScope())
                         {
                             EditorGUILayout.Space();
-                            if (GUILayout.Button("Convert To Latest Algorithm Parameters", GUILayout.Width(300)))
+                            if (GUILayout.Button("转换为最新的算法参数", GUILayout.Width(300)))
                             {
-                                if (EditorUtility.DisplayDialog("Parameter conversion", "Converts the parameters of an old algorithm to the latest algorithm.", "Ok", "Cancel"))
+                                if (EditorUtility.DisplayDialog("参数转换", "将旧算法的参数转换为最新算法。", "Ok", "Cancel"))
                                 {
                                     //Debug.Log("OK!");
                                     convertAction?.Invoke();
@@ -522,7 +522,7 @@ namespace MagicaCloth
             Foldout(title, StaticStringBuilder.ToString(),
                 () =>
                 {
-                    EditorGUILayout.PropertyField(influenceTarget);
+                    EditorGUILayout.PropertyField(influenceTarget,new GUIContent("影响的目标"));
                     EditorGUILayout.Slider(maxSpeed, 0.0f, 20.0f, "Max Move Speed");
                     EditorGUILayout.LabelField("运动的影响");
                     BezierInspector("Move Influence", moveInfluence, 0.0f, 1.0f);
@@ -542,7 +542,7 @@ namespace MagicaCloth
                     EditorGUILayout.Space();
                     //EditorGUILayout.LabelField("Stabilize After Reset");
                     //EditorGUILayout.Slider(stabilizationTime, 0.0f, 3.0f, "Stabilization Time");
-                    EditorGUILayout.Slider(stabilizationTime, 0.0f, 1.0f, "Stabilization Time After Reset");
+                    EditorGUILayout.Slider(stabilizationTime, 0.0f, 1.0f, "复位后的稳定时间");
                 },
                 warning: changed
                 );

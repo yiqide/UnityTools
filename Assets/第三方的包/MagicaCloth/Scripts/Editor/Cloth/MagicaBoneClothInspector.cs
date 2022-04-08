@@ -180,7 +180,7 @@ namespace MagicaCloth
             if (scr.ClothTarget.Connection == BoneClothTarget.ConnectionMode.MeshSequentialLoop || scr.ClothTarget.Connection == BoneClothTarget.ConnectionMode.MeshSequentialNoLoop)
             {
                 // 警告
-                EditorGUILayout.HelpBox("RootList must be registered in the order of connection for sequential connection.", MessageType.Info);
+                EditorGUILayout.HelpBox("RootList必须按照连接的顺序注册", MessageType.Info);
             }
 
             // チーム項目

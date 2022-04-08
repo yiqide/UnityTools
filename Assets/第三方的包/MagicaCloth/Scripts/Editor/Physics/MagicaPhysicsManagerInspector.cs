@@ -36,7 +36,7 @@ namespace MagicaCloth
             using (new EditorGUI.IndentLevelScope())
             {
                 var prop = serializedObject.FindProperty("updateTime.updatePerSeccond");
-                EditorGUILayout.PropertyField(prop);
+                EditorGUILayout.PropertyField(prop,new GUIContent("物理引擎更新的次数"));
 
                 var prop2 = serializedObject.FindProperty("updateTime.updateMode");
                 EditorGUILayout.PropertyField(prop2);
@@ -61,9 +61,9 @@ namespace MagicaCloth
             using (new EditorGUI.DisabledScope(EditorApplication.isPlaying || useFasterWrite == false))
             {
                 var prop4 = serializedObject.FindProperty("useFasterWrite");
-                EditorGUILayout.PropertyField(prop4, new GUIContent("Faster Write (Experimental)"));
+                EditorGUILayout.PropertyField(prop4, new GUIContent("快速写入[实验]"));
             }
-            EditorGUILayout.HelpBox("Faster Write is a fast mesh write with a new vertex buffer.\nAvailable in Unity 2021.2 and later.", MessageType.Info);
+            EditorGUILayout.HelpBox("Faster Write是一个带有新的顶点缓冲区的快速网格写入。\n在Unity 2021.2或更高版本中可用", MessageType.Info);
         }
 
         void Help1()
@@ -72,7 +72,7 @@ namespace MagicaCloth
 
             if (scr.UpdateMode == UpdateTimeManager.UpdateMode.OncePerFrame)
             {
-                EditorGUILayout.HelpBox("[OncePerFrame] must have stable FPS.", MessageType.Info);
+                EditorGUILayout.HelpBox("[OncePerFrame] must have stable FPS.必须有稳定的FPS", MessageType.Info);
             }
             else if (scr.UpdateTime.IsDelay)
             {
@@ -80,7 +80,11 @@ namespace MagicaCloth
                     "Delayed execution. [experimental]\n" +
                     "Improve performance by running simulations during rendering.\n" +
                     "Note, however, that the result is one frame late.\n" +
-                    "This delay is covered by future predictions.",
+                    "This delay is covered by future predictions.\n"
+                    +"延迟执行[实验]\n"+
+                    "在渲染过程中通过运行模拟来提高性能\n"+
+                    "但是请注意，结果是延迟了一帧\n"+
+                    "这一延迟被未来的预测所掩盖",
                     MessageType.Info);
             }
         }

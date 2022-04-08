@@ -19,10 +19,10 @@ namespace MagicaCloth
         {
             using (var horizontalScope = new GUILayout.HorizontalScope())
             {
-                EditorGUILayout.LabelField("Parameters", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Parameters[参数]", EditorStyles.boldLabel);
 
                 GUI.backgroundColor = Color.green;
-                if (EditorGUILayout.DropdownButton(new GUIContent("Preset"), FocusType.Keyboard, GUILayout.Width(70), GUILayout.Height(16)))
+                if (EditorGUILayout.DropdownButton(new GUIContent("预设"), FocusType.Keyboard, GUILayout.Width(70), GUILayout.Height(16)))
                 {
                     CreatePresetPopupMenu(owner, clothParam);
                     GUI.backgroundColor = Color.white;
@@ -153,7 +153,7 @@ namespace MagicaCloth
 
             // 保存ダイアログ
             string path = UnityEditor.EditorUtility.SaveFilePanelInProject(
-                "Save Preset",
+                "保存预设",
                 $"{presetTypeName}_xxx",
                 "json",
                 "Enter a name for the preset json.",
