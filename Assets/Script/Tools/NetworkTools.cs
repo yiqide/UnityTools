@@ -17,26 +17,17 @@ namespace Framework.Tools
         /// 当前下载器的数量
         /// </summary>
         public static int DownloaderCount => coroutines.Count;
-        
-        /// <summary>
-        /// 当前正在下载的任务
-        /// 下载失败的任务将会从里面移除,下载成功的也会移除
-        /// string-任务名称  UnityWebRequest-下载对象
-        /// </summary>
-        public static Dictionary<string, UnityWebRequest> TasksSchedule => tasksSchedule;
-        
+
         #endregion
         
         private static readonly object LockMe = new object();
         //等待下载的列表
-        private static List<Task> tasks = new List<Task>();
+        private static LinkedList<DownLoadTask> tasks = new LinkedList<DownLoadTask>();
         //下载中的列表
-        private static List<Task> dowingTasks = new List<Task>();
+        private static List<DownLoadTask> dowingTasks = new List<DownLoadTask>();
         
         private static List<Coroutine> coroutines = new List<Coroutine>();
         
-        private static readonly Dictionary<string, UnityWebRequest> tasksSchedule = new Dictionary<string, UnityWebRequest>();
-
         /// <summary>
         /// action会在任务完成时执行
         /// </summary>
@@ -46,17 +37,17 @@ namespace Framework.Tools
         public static void AddTask(string filePath, string url, Action<bool> callBackAction = null)
         {
             if (DownloaderCount == 0) AddDownloader(1);
-            AddTask(new Task(filePath, url, callBackAction));
+            AddTask(new DownLoadTask(filePath, url, callBackAction));
         }
 
-        private static void AddTask(Task task)
+        public static void AddTask(DownLoadTask task,bool addFast=false)
         {
             if (DownloaderCount == 0) AddDownloader(1);
             lock (LockMe)
             {
                 foreach (var item in dowingTasks)
                 {
-                    if ( item.key==task.key)
+                    if ( item.FilePath==task.FilePath)
                     {
                         return;
                     }
@@ -64,12 +55,17 @@ namespace Framework.Tools
 
                 foreach (var item in tasks)
                 {
-                    if ( item.key==task.key)
+                    if ( item.FilePath==task.FilePath)
                     {
                         return;
                     }
                 }
-                tasks.Add(task);
+
+                if (addFast) 
+                    tasks.AddFirst(task);
+                else
+                    tasks.AddLast(task);
+
             }
         }
 
@@ -78,7 +74,7 @@ namespace Framework.Tools
         /// </summary>
         /// <param name="filePathAndUrl">key-filePath  value-url</param>
         /// <param name="callBackAction"></param>
-        public static void AddTasks(Dictionary<string, string> filePathAndUrl, Action<bool> callBackAction = null)
+        public static void AddTasks(Dictionary<string, string> filePathAndUrl,bool addFast=false, Action<bool> callBackAction = null)
         {
             if (DownloaderCount == 0) AddDownloader(1);
             var count = filePathAndUrl.Count;
@@ -86,7 +82,7 @@ namespace Framework.Tools
             bool taskFailed = false;
             foreach (var item in filePathAndUrl)
             {
-                var task = new Task(item.Key, item.Value, (b) =>
+                var task = new DownLoadTask(item.Key, item.Value, (b) =>
                 {
                     if (b)
                     {
@@ -105,10 +101,19 @@ namespace Framework.Tools
                         }
                     }
                 });
-                AddTask(task);
+                AddTask(task,addFast);
             }
         }
-
+        
+        public static void AddTasks(DownLoadTasks downLoadTasks,bool addFast=false)
+        {
+            if (DownloaderCount == 0) AddDownloader(1);
+            foreach (var item in downLoadTasks.Tasks)
+            {
+                AddTask( item,addFast);
+            }
+        }
+        
         /// <summary>
         /// 添加下载器，在任务多的时候会提升下载速度
         /// </summary>
@@ -123,53 +128,32 @@ namespace Framework.Tools
 
         private static IEnumerator DownLoad()
         {
-            string url;
-            string filepath;
-            Action<bool> action;
             byte[] data;
-            string taskName;
             while (true)
             {
                 if (tasks.Count != 0)
                 {
-                    Task task = tasks[0];
-                    url = task.value;
-                    filepath = task.key;
-                    action = task.Action;
+                    DownLoadTask task = tasks.First.Value;
                     dowingTasks.Add(task);
                     tasks.Remove(task);
-                    UnityWebRequest request = UnityWebRequest.Get(url);
-                    taskName = filepath;
-                    if (!tasksSchedule.TryAdd(taskName, request))
-                    {
-                        int ls = 1;
-                        while (true)
-                        {
-                            taskName = filepath + ls;
-                            if (!tasksSchedule.TryAdd(taskName, request))
-                            {
-                                ls++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    string savePath = Path.GetDirectoryName(filepath);
-                    if (!string.IsNullOrEmpty(savePath)&&!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
+                    UnityWebRequest request = UnityWebRequest.Get(task.Url);
+                    task.UnityWebRequest = request;
+                    string savePath = Path.GetDirectoryName(task.FilePath);
+                    if (!string.IsNullOrEmpty(savePath) && !Directory.Exists(savePath))
+                        Directory.CreateDirectory(savePath);
                     yield return request.SendWebRequest();
                     if (request.isDone && string.IsNullOrEmpty(request.error))
                     {
-                        using (FileStream fs = new FileStream(filepath, FileMode.OpenOrCreate))
+                        using (FileStream fs = new FileStream(task.FilePath, FileMode.OpenOrCreate))
                         {
                             fs.SetLength(0);
                             data = request.downloadHandler.data;
                             fs.Write(data, 0, data.Length);
                         }
+
                         Debug.Log("下载完成");
                         dowingTasks.Remove(task);
-                        action?.Invoke(true);
+                        task.Action?.Invoke(true);
                     }
                     else
                     {
@@ -177,7 +161,7 @@ namespace Framework.Tools
                         Debug.LogWarning(request.error);
                         try
                         {
-                            File.Delete(filepath);
+                            File.Delete(task.FilePath);
                         }
                         catch (Exception e)
                         {
@@ -185,28 +169,117 @@ namespace Framework.Tools
                         }
 
                         dowingTasks.Remove(task);
-                        tasksSchedule.Remove(taskName);
-                        action?.Invoke(false);
+
+                        task.Action?.Invoke(false);
                     }
+
                     request.Dispose();
-                    tasksSchedule.Remove(taskName);
+                    task.UnityWebRequest = null;
                 }
+
                 yield return null;
             }
         }
 
-        private class Task
+        public class DownLoadTask
         {
-            public string key; // filePath
-            public string value; //url
-            public Action<bool> Action;
+            public string FilePath => filePath;
+            public string Url => url;
 
-            public Task(string k, string v, Action<bool> a)
+            public UnityWebRequest UnityWebRequest //成功后和失败后都是null
             {
-                key = k;
-                value = v;
-                Action = a;
+                get { return unityWebRequest; }
+                set { unityWebRequest = value; }
             }
+
+            public string TaskName => taskName;
+            public DownLoadTaskStatus Status => status;
+            public Action<bool> Action => action;
+
+            private DownLoadTaskStatus status;
+            private string filePath;
+            private string url;
+            private Action<bool> action;
+            private UnityWebRequest unityWebRequest = null;
+            private string taskName;
+
+            public DownLoadTask(string filePath, string url, Action<bool> action = null, string taskName = null)
+            {
+                this.filePath = filePath;
+                this.url = url;
+                this.action = action;
+                this.taskName = taskName;
+                status = DownLoadTaskStatus.None;
+            }
+        }
+
+        public class DownLoadTasks
+        {
+            public List<DownLoadTask> Tasks => tasks;
+
+            public int CompleteCount()
+            {
+                int result = 0;
+                foreach (var item in tasks)
+                {
+                    if (item.Status == DownLoadTaskStatus.Complete)
+                    {
+                        result++;
+                    }
+                }
+
+                return result;
+            }
+
+            public float DownLoadSchedule => ((float) CompleteCount()) / tasks.Count;
+
+            private Action<bool> Action;
+            private List<DownLoadTask> tasks;
+
+            public DownLoadTasks(Dictionary<string, string> filePathAndUrl, Action<bool> action)
+            {
+                var tasks = new List<DownLoadTask>();
+                Action = action;
+                foreach (var item in filePathAndUrl)
+                {
+                    tasks.Add(new DownLoadTask(item.Key, item.Value, (b) =>
+                    {
+                        if (b)
+                        {
+                            CallBack();
+                        }
+                        else
+                        {
+                            if (!callBackFalg)
+                            {
+                                callBackFalg = true;
+                                Action.Invoke(false);
+                            }
+                        }
+                    }));
+                }
+
+                this.tasks = tasks;
+            }
+
+            private bool callBackFalg = false;
+
+            private void CallBack()
+            {
+                if (CompleteCount() == Tasks.Count)
+                {
+                    callBackFalg = true;
+                    Action.Invoke(true);
+                }
+            }
+        }
+
+        public enum DownLoadTaskStatus
+        {
+            None,
+            DownLoading,
+            Complete,
+            Fail
         }
     }
 }
