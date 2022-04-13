@@ -34,10 +34,10 @@ namespace Framework.Tools
         /// <param name="filePath"></param>
         /// <param name="url"></param>
         /// <param name="callBackAction">会在任务完成时执行</param>
-        public static void AddTask(string filePath, string url, Action<bool> callBackAction = null)
+        public static void AddTask(string filePath, string url,int timeout=0, Action<bool> callBackAction = null)
         {
             if (DownloaderCount == 0) AddDownloader(1);
-            AddTask(new DownLoadTask(filePath, url, callBackAction));
+            AddTask(new DownLoadTask(filePath, url,timeout, callBackAction));
         }
 
         public static void AddTask(DownLoadTask task,bool addFast=false)
@@ -82,7 +82,7 @@ namespace Framework.Tools
             bool taskFailed = false;
             foreach (var item in filePathAndUrl)
             {
-                var task = new DownLoadTask(item.Key, item.Value, (b) =>
+                var task = new DownLoadTask(item.Key, item.Value, 0,(b) =>
                 {
                     if (b)
                     {
@@ -136,11 +136,12 @@ namespace Framework.Tools
                     DownLoadTask task = tasks.First.Value;
                     dowingTasks.Add(task);
                     tasks.Remove(task);
+                    task.SetStatus(DownLoadTaskStatus.DownLoading);
                     UnityWebRequest request = UnityWebRequest.Get(task.Url);
+                    if (task.Timeout!=0) request.timeout=task.Timeout;
                     task.UnityWebRequest = request;
                     string savePath = Path.GetDirectoryName(task.FilePath);
-                    if (!string.IsNullOrEmpty(savePath) && !Directory.Exists(savePath))
-                        Directory.CreateDirectory(savePath);
+                    if (!string.IsNullOrEmpty(savePath) && !Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
                     yield return request.SendWebRequest();
                     if (request.isDone && string.IsNullOrEmpty(request.error))
                     {
@@ -150,8 +151,8 @@ namespace Framework.Tools
                             data = request.downloadHandler.data;
                             fs.Write(data, 0, data.Length);
                         }
-
                         Debug.Log("下载完成");
+                        task.SetStatus( DownLoadTaskStatus.Complete);
                         dowingTasks.Remove(task);
                         task.Action?.Invoke(true);
                     }
@@ -167,35 +168,33 @@ namespace Framework.Tools
                         {
                             Debug.LogWarning(e);
                         }
-
+                        task.SetStatus( DownLoadTaskStatus.Fail);
                         dowingTasks.Remove(task);
-
                         task.Action?.Invoke(false);
                     }
-
                     request.Dispose();
                     task.UnityWebRequest = null;
                 }
-
                 yield return null;
             }
         }
 
-        public class DownLoadTask
+        public  class DownLoadTask
         {
             public string FilePath => filePath;
             public string Url => url;
-
             public UnityWebRequest UnityWebRequest //成功后和失败后都是null
             {
                 get { return unityWebRequest; }
                 set { unityWebRequest = value; }
             }
-
             public string TaskName => taskName;
             public DownLoadTaskStatus Status => status;
             public Action<bool> Action => action;
-
+            public int Timeout => timeout;
+            
+            
+            private int timeout;
             private DownLoadTaskStatus status;
             private string filePath;
             private string url;
@@ -203,12 +202,18 @@ namespace Framework.Tools
             private UnityWebRequest unityWebRequest = null;
             private string taskName;
 
-            public DownLoadTask(string filePath, string url, Action<bool> action = null, string taskName = null)
+            public void SetStatus(DownLoadTaskStatus status)
+            {
+                this.status = status;
+            }
+
+            public DownLoadTask(string filePath, string url,int timeout=0,Action<bool> action = null, string taskName = null)
             {
                 this.filePath = filePath;
                 this.url = url;
                 this.action = action;
                 this.taskName = taskName;
+                this.timeout = timeout;
                 status = DownLoadTaskStatus.None;
             }
         }
@@ -242,7 +247,7 @@ namespace Framework.Tools
                 Action = action;
                 foreach (var item in filePathAndUrl)
                 {
-                    tasks.Add(new DownLoadTask(item.Key, item.Value, (b) =>
+                    tasks.Add(new DownLoadTask(item.Key, item.Value, 0,(b) =>
                     {
                         if (b)
                         {
