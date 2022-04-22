@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ using UnityEngine;
 public class NewBehaviourScript : MonoBehaviour
 {
     void Start()
-    {
+	{
         var stReadLines = File.ReadLines("/Users/ddw/Downloads/工作簿1.csv");
         var readLines = stReadLines as string[] ?? stReadLines.ToArray();
         for (int i=1;i<readLines.Count();i++)

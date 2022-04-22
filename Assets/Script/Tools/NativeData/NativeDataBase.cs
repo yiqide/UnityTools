@@ -42,7 +42,7 @@ public abstract class NativeDataBase<T> where T : new()
         }
         catch (Exception e)
         {
-            //Debug.LogError(e);
+            Debug.LogError(e);
         }
 
         instance ??= new T();

@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Framework.Tools
 {
@@ -128,42 +127,6 @@ namespace Framework.Tools
             }
         }
 
-        public static byte[] EncryptDES(byte[] data,string key)
-        {
-            byte[] rgbKey = Encoding.UTF8.GetBytes(key.Substring(0, 16));
-            //byte[] rgbIV = Keys;
-            DESCryptoServiceProvider dCSP = new DESCryptoServiceProvider();
-            MemoryStream mStream = new MemoryStream();
-            CryptoStream cStream =
-                new CryptoStream(mStream, dCSP.CreateEncryptor(rgbKey, Keys), CryptoStreamMode.Write);
-            cStream.Write(data, 0, data.Length);
-            cStream.FlushFinalBlock();
-            cStream.Dispose();
-            mStream.Dispose();
-            return mStream.ToArray();
-        }
-
-        public static async Task<byte[]> EncryptDESasdad(byte[] data,string key)
-        {
-            Task<byte[]> task = new Task<byte[]>(() =>
-            {
-                
-                byte[] rgbKey = Encoding.UTF8.GetBytes(key.Substring(0, 16));
-                DESCryptoServiceProvider dCSP = new DESCryptoServiceProvider();
-                MemoryStream mStream = new MemoryStream();
-                CryptoStream cStream =
-                    new CryptoStream(mStream, dCSP.CreateEncryptor(rgbKey, Keys), CryptoStreamMode.Write);
-                cStream.Write(data, 0, data.Length);
-                cStream.FlushFinalBlock();
-                cStream.Dispose();
-                mStream.Dispose();
-                return mStream.ToArray();
-            });
-            task.Start();
-            task.Wait();
-            return task.Result;
-        }
-
         /// <summary>
         /// DES解密字符串
         /// </summary>
@@ -192,27 +155,7 @@ namespace Framework.Tools
                 return decryptString;
             }
         }
-        public static byte[] DecryptDES(byte[] decryptString, string decryptKey)
-        {
-            try
-            {
-                byte[] rgbKey = Encoding.UTF8.GetBytes(decryptKey);
-                DESCryptoServiceProvider DCSP = new DESCryptoServiceProvider();
-                MemoryStream mStream = new MemoryStream();
-                CryptoStream cStream =
-                    new CryptoStream(mStream, DCSP.CreateDecryptor(rgbKey, Keys), CryptoStreamMode.Write);
-                cStream.Write(decryptString, 0, decryptString.Length);
-                cStream.FlushFinalBlock();
-                cStream.Dispose();
-                mStream.Dispose();
-                return mStream.ToArray();
-            }
-            catch
-            {
-                return decryptString;
-            }
-        }
-        
+
         #endregion
     }
 }
