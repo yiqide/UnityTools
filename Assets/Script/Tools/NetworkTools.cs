@@ -113,7 +113,20 @@ namespace Framework.Tools
                 AddTask( item,addFast);
             }
         }
-        
+
+        /// <summary>
+        /// 尽可能将下载任务设置到下载任务的最前方
+        /// </summary>
+        /// <param name="downLoadTask"></param>
+        public static void SetFirst(DownLoadTask downLoadTask)
+        {
+            if (tasks.Contains(downLoadTask))
+            {
+                tasks.Remove(downLoadTask);
+                tasks.AddFirst(downLoadTask);
+            }
+        }
+
         /// <summary>
         /// 添加下载器，在任务多的时候会提升下载速度
         /// </summary>
@@ -126,6 +139,7 @@ namespace Framework.Tools
             }
         }
 
+        //下载器
         private static IEnumerator DownLoad()
         {
             byte[] data;
@@ -179,7 +193,7 @@ namespace Framework.Tools
             }
         }
 
-        public  class DownLoadTask
+        public class DownLoadTask
         {
             public string FilePath => filePath;
             public string Url => url;

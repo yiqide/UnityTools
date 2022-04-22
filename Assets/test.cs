@@ -16,8 +16,22 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
 {
     void Start()
     {
-        return;
+
         /*
+        return;
+        Debug.Log( MyNativeData.FilePath);
+        MyNativeData.Instance.name = "llll";
+        MyNativeData.Instance.yer = 20;
+        MyNativeData.Instance.Save();
+        
+        
+        return;
+        Debug.LogError(MyNativeData.Instance.name);
+        Debug.LogError(MyNativeData.Instance.yer);
+        Debug.LogError(MyNativeData.Instance.fasetName);
+
+        return;
+        
         LTow lTow = new LTow();
         lTow.en = "Get abundant rewards by completing special levels within the event time. Enjoy Easter Day with your friends!";
         lTow.zh = "在活动时间内完成对应活动关卡，获得丰厚奖励，与好友欢度复活节的美好时光吧！";
@@ -61,11 +75,7 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
         List<int> count_down_2022_6 = new List<int>();
         string str = FileTools.ReadFile("/Users/ddw/Downloads/工作簿1.csv");
         string[] strs = str.Split(new string[] {",", System.Environment.NewLine}, StringSplitOptions.None);
-
-        for (int i = 0; i < strs.Length - 1; i += 18)
-        {
-            string s = strs[i + 1];
-        }
+        
 
         for (int i = 0; i < strs.Length - 1; i += 18)
         {
@@ -128,7 +138,7 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
                 count_down_2022_6.Add(int.Parse(strs[i + 17]));
             }
         }
-
+        
         FileTools.WriteFile("/Users/ddw/Downloads/2022_1.json", SerializeTools.ObjToString(level2022_1.ToArray()));
         FileTools.WriteFile("/Users/ddw/Downloads/2022_2.json", SerializeTools.ObjToString(level2022_2.ToArray()));
         FileTools.WriteFile("/Users/ddw/Downloads/2022_3.json", SerializeTools.ObjToString(level2022_3.ToArray()));
