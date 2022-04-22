@@ -632,7 +632,6 @@ GameObject:
   - component: {fileID: 231516549}
   - component: {fileID: 231516548}
   - component: {fileID: 231516547}
-  - component: {fileID: 231516551}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -720,18 +719,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &231516551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231516546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfd8dccdedd5c4b2f917dedbbbde0b73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &294066737 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400166, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
@@ -817,7 +804,6 @@ GameObject:
   m_Component:
   - component: {fileID: 545863536}
   - component: {fileID: 545863535}
-  - component: {fileID: 545863537}
   m_Layer: 0
   m_Name: Magica Virtual Deformer
   m_TagString: Untagged
@@ -883,18 +869,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &545863537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 545863534}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fa8dc6ad73244de9a03fe40221015a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &550687418 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100314, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
