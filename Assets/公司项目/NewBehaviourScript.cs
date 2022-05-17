@@ -9,8 +9,15 @@ using UnityEngine;
 
 public class NewBehaviourScript : MonoBehaviour
 {
+    private void Awake()
+    {
+        Debug.Log("Awake");
+    }
+
     void Start()
     {
+        Debug.Log("Start");
+        return;
         string path = "/Users/ddw/Downloads/多语言";
         var strings=FileTools.GetAllFile(path);
         byte[] bt = null;
@@ -124,7 +131,11 @@ public class NewBehaviourScript : MonoBehaviour
             FileTools.WriteFile(filePath,SerializeTools.ObjToString(lTows, Formatting.None));
         }
     }
-    
+
+    private void Update()
+    {
+        Debug.Log("Update");
+    }
 }
  namespace my
 {

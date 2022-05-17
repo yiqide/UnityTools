@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement usage-hints="None" name="Top" style="-unity-background-image-tint-color: rgb(202, 33, 33); opacity: 1; border-left-color: rgb(137, 217, 48); border-right-color: rgb(137, 217, 48); border-top-color: rgb(137, 217, 48); border-bottom-color: rgb(137, 217, 48); flex-direction: row; margin-right: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-basis: auto; position: relative; flex-shrink: 1; flex-wrap: nowrap; align-items: stretch; justify-content: center;">
+        <ui:TextField picking-mode="Ignore" label="Text Field" value="filler text" text="filler text" style="align-items: flex-end; flex-grow: 1;" />
+        <ui:Button text="Button" display-tooltip-when-elided="true" />
+    </ui:VisualElement>
+</ui:UXML>
