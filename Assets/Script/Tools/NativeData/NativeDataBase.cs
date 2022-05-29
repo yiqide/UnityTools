@@ -14,6 +14,7 @@ public abstract class NativeDataBase<T> where T : new()
             if (instance==null)
             {
                 Rade();
+                (Instance as NativeDataBase<T>)?.Init();
             }
             return instance;
         }
@@ -51,6 +52,11 @@ public abstract class NativeDataBase<T> where T : new()
     public virtual void Save()
     {
         FileTools.WriteFile(FilePath, SerializeTools.ObjToString(Instance));
+    }
+
+    public virtual void Init()
+    {
+        
     }
 
 }
