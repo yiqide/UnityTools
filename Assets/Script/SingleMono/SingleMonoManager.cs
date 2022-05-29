@@ -40,7 +40,7 @@ namespace Framework.SingleMone
         {
             DontDestroyOnLoad(initialized.gameObject);
             Dictionary<Type, Type[]> typeInterFaces = new Dictionary<Type, Type[]>();
-            Assembly assembly = Assembly.GetAssembly(typeof(SingleMonoManager));
+            Assembly assembly = typeof(SingleMonoManager).Assembly;
             foreach (var item in assembly.GetTypes())
             {
                 if (item.IsClass && !item.IsAbstract) typeInterFaces.Add(item, item.GetInterfaces());

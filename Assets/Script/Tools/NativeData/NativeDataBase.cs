@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Framework.Tools;
 using UnityEngine;
 
@@ -14,11 +12,14 @@ public abstract class NativeDataBase<T> where T : new()
             if (instance==null)
             {
                 Rade();
+                (instance as NativeDataBase<T>).Init();
             }
             return instance;
         }
     }
-
+    /// <summary>
+    /// 文件的存储路径
+    /// </summary>
     public static string FilePath
     {
         get
@@ -34,7 +35,7 @@ public abstract class NativeDataBase<T> where T : new()
     private static string filePath=null;
     private static T instance;
     
-    public static void Rade()
+    private static void Rade()
     {
         try
         {
@@ -47,7 +48,17 @@ public abstract class NativeDataBase<T> where T : new()
 
         instance ??= new T();
     }
-    
+    /// <summary>
+    /// 在该数据第一次生成时调用
+    /// </summary>
+    public virtual void Init() 
+    {
+
+    }
+
+    /// <summary>
+    /// 保存数据
+    /// </summary>
     public virtual void Save()
     {
         FileTools.WriteFile(FilePath, SerializeTools.ObjToString(Instance));
