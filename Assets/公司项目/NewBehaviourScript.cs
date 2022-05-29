@@ -9,16 +9,96 @@ using UnityEngine;
 
 public class NewBehaviourScript : MonoBehaviour
 {
+    private void Awake()
+    {
+        Debug.Log("Awake");
+    }
+
     void Start()
-	{
+    {
+        Debug.Log("Start");
+        return;
+        string path = "/Users/ddw/Downloads/多语言";
+        var strings=FileTools.GetAllFile(path);
+        byte[] bt = null;
+        foreach (var item in strings)
+        {
+             string fileName=Path.GetFileName(item);
+             string filePath = item.Replace(fileName,"");
+             bt= File.ReadAllBytes(item);
+             switch (fileName)
+        {
+            case "英文.png":
+                fileName = "banner.png";break;
+            case "中文简体.png":
+                fileName = "banner_ch.png";break;
+            case "中文繁体.png":
+                fileName = "banner_ch_tw.png";break;
+            case "越南语.png":
+                fileName = "banner_vi.png";break;
+            case "印尼语.png":
+                fileName = "banner_id.png";break;
+            case "意大利语.png":
+                fileName = "banner_it.png";break;
+            case "希腊语.png":
+                fileName = "banner_el.png";break;
+            case "希伯来语.png":
+                fileName = "banner_he.png";break;
+            case "西班牙语.png":
+                fileName = "banner_sp.png";break;
+            case "土耳其语.png":
+                fileName = "banner_tr.png";break;
+            case "泰语.png":
+                fileName = "banner_th.png";break;
+            case "瑞典语.png":
+                fileName = "banner_sv.png";break;
+            case "日语.png":
+                fileName = "banner_ja.png";break;
+            case "葡萄牙语.png":
+                fileName = "banner_po.png";break;
+            case "挪威语.png":
+                fileName = "banner_no.png";break;
+            case "马来语.png":
+                fileName = "banner_ms.png";break;
+            case "荷兰语.png":
+                fileName = "banner_nl.png";break;
+            case "韩语.png":
+                fileName = "banner_ko.png";break;
+            case "芬兰语.png":
+                fileName = "banner_fi.png";break;
+            case "菲律宾语.png":
+                fileName = "banner_fil.png";break;
+            case "法语.png":
+                fileName = "banner_fr.png";break;
+            case "俄语.png":
+                fileName = "banner_ru.png";break;
+            case "德语.png":
+                fileName = "banner_ge.png";break;
+            case "丹麦语.png":
+                fileName = "banner_da.png";break;
+            case "波兰语.png":
+                fileName = "banner_pl.png";break;
+            case "冰岛语.png":
+                fileName = "banner_is.png";break;
+            case "阿拉伯语.png":
+                fileName = "banner_ar.png";
+                break;
+        }
+
+             filePath += fileName;
+             File.WriteAllBytes(filePath,bt);
+        }
+       
+        
+        return;
         var stReadLines = File.ReadLines("/Users/ddw/Downloads/工作簿1.csv");
         var readLines = stReadLines as string[] ?? stReadLines.ToArray();
-        for (int i=1;i<readLines.Count();i++)
+        for (int i=0;i<readLines.Count();i++)
         {
             string[] str=readLines[i].Split(new string[] {","}, StringSplitOptions.None);
             string fileName = str[0] + str[1] + ".txt";
             string filePath = "/Users/ddw/Downloads/工作簿1/"+fileName;
-            LTows lTows = new LTows();
+            my.LTow lTows = new my.LTow();
             lTows.en = str[3];
             lTows.zh = str[4];
             lTows.zh_TW = str[5];
@@ -34,7 +114,10 @@ public class NewBehaviourScript : MonoBehaviour
             lTows.vi = str[15];
             lTows.tu = str[16];
             lTows.ind = str[17];
-            lTows.po = str[19];//
+
+            lTows.po = str[18];//
+            lTows.ma = str[19];//
+
             lTows.th = str[20];
             lTows.gr = str[21];
             lTows.ar = str[22];
@@ -44,18 +127,26 @@ public class NewBehaviourScript : MonoBehaviour
             lTows.no = str[26];
             lTows.fi = str[27];
             lTows.ic = str[28];
-            lTows.fi = str[29];
+            lTows.fil = str[29];
             FileTools.WriteFile(filePath,SerializeTools.ObjToString(lTows, Formatting.None));
         }
     }
-    
+
+    private void Update()
+    {
+        Debug.Log("Update");
+    }
 }
+ namespace my
+{
+    
+
 
 /// <summary>
 /// 多语言
 /// </summary>
 [Serializable]
-public class LTows
+public class LTow
 {
     public string zh;
     public string en;
@@ -84,7 +175,9 @@ public class LTows
     public string no;//挪威语
     public string fi;//芬兰
     public string ic;//冰岛
-    public LTows()
+    public string ma;//马来西亚
+    public string fil;//菲律宾语
+    public LTow()
     {
         zh = "";
         en = "";
@@ -111,5 +204,9 @@ public class LTows
         no = ""; //挪威语
         fi = ""; //芬兰
         ic = ""; //冰岛
+        ma = "";
+        fil = "";
     }
+}
+
 }

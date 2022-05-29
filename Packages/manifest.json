@@ -6,14 +6,21 @@
     "com.unity.ide.rider": "3.0.14",
     "com.unity.ide.visualstudio": "2.0.15",
     "com.unity.ide.vscode": "1.2.5",
+<<<<<<< HEAD
     "com.unity.jobs": "0.50.0-preview.9",
     "com.unity.nuget.newtonsoft-json": "3.0.2",
+=======
+    "com.unity.jobs": "0.50.0-preview.8",
+    "com.unity.localization": "1.3.1",
+    "com.unity.nuget.newtonsoft-json": "2.0.2",
+>>>>>>> dda09d7b12b2ce1a2d8bd988e7c4a533b0029525
     "com.unity.render-pipelines.universal": "12.1.6",
     "com.unity.shadergraph": "12.1.6",
     "com.unity.test-framework": "1.1.31",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.6.4",
     "com.unity.ugui": "1.0.0",
+    "com.unity.vectorgraphics": "2.0.0-preview.19",
     "com.unity.visualscripting": "1.7.6",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",

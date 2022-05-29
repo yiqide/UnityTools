@@ -12,7 +12,11 @@ public abstract class NativeDataBase<T> where T : new()
             if (instance==null)
             {
                 Rade();
+<<<<<<< HEAD
                 (instance as NativeDataBase<T>).Init();
+=======
+                (Instance as NativeDataBase<T>)?.Init();
+>>>>>>> dda09d7b12b2ce1a2d8bd988e7c4a533b0029525
             }
             return instance;
         }
@@ -62,6 +66,11 @@ public abstract class NativeDataBase<T> where T : new()
     public virtual void Save()
     {
         FileTools.WriteFile(FilePath, SerializeTools.ObjToString(Instance));
+    }
+
+    public virtual void Init()
+    {
+        
     }
 
 }
