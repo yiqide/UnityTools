@@ -8,15 +8,43 @@ using Framework.Interfase;
 using Framework.Setting;
 using Framework.SingleMone;
 using Framework.Tools;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum EDailyTaskConfiguration
+{
+    None=0,
+    logGame=1,
+    useHide=2,
+    findDifferences=3,
+    watchVideo=4,
+    playEventLevel=5,
+    scaleImage=6,
+    playSpecialLevel=7,
+    playMainLevel=8,
+}
 [SingleScript(false)]
 public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
 {
     void Start()
     {
 
+        string[] str = new string[] {"ni","213" };
+        Debug.Log(SerializeTools.ObjToString(str));
+        return;
+
+        List<string[]> list = new List<string[]>();
+        list.Add(new string[]{((int)EDailyTaskConfiguration.logGame).ToString(),"1","1","pic_dt_1.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.watchVideo).ToString(),"1","2","pic_dt_2.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.playMainLevel).ToString(),"50","10","pic_dt_7.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.playEventLevel).ToString(),"10","5","pic_dt_5.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.findDifferences).ToString(),"75","5","pic_dt_3.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.useHide).ToString(),"10","3","pic_dt_4.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.playSpecialLevel).ToString(),"2","3","pic_dt_8.png"});
+        list.Add(new string[]{((int)EDailyTaskConfiguration.scaleImage).ToString(),"5","1","pic_dt_6.png"});
+        FileTools.WriteFile("/Users/ddw/Downloads/task.json", SerializeTools.ObjToString(list, Formatting.None));
+        return;
         /*
         return;
         Debug.Log( MyNativeData.FilePath);
@@ -61,6 +89,7 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
         lTow.es = "Encuentra tu huevo de Pascua";
         FileTools.WriteFile("/Users/ddw/Downloads/text.txt",SerializeTools.ObjToString(lTow));
         return;*/
+        /*
         List<string> level2022_1 = new List<string>();
         List<string> level2022_2 = new List<string>();
         List<string> level2022_3 = new List<string>();
@@ -73,90 +102,45 @@ public class test : SingleMonoBase<test>, ISendEvent, IReceiveEvent
         List<int> count_down_2022_4 = new List<int>();
         List<int> count_down_2022_5 = new List<int>();
         List<int> count_down_2022_6 = new List<int>();
-        string str = FileTools.ReadFile("/Users/ddw/Downloads/工作簿1.csv");
-        string[] strs = str.Split(new string[] {",", System.Environment.NewLine}, StringSplitOptions.None);
-        
-
-        for (int i = 0; i < strs.Length - 1; i += 18)
+        */
+        List<string> level2022_7 = new List<string>();
+        List<string> level2022_8 = new List<string>();
+        List<string> level2022_9 = new List<string>();
+        List<int> count_down_2022_7 = new List<int>();
+        List<int> count_down_2022_8 = new List<int>();
+        List<int> count_down_2022_9 = new List<int>();
+        var strings= File.ReadLines("/Users/ddw/Downloads/工作簿1.csv");
+        foreach (var item in strings)
         {
-            level2022_1.Add(strs[i + 1]);
-            count_down_2022_1.Add(int.Parse(strs[i + 2]));
-            if (!string.IsNullOrEmpty(strs[i + 4]))
+            var split=item.Split(",");
+            if (!string.IsNullOrEmpty(split[0]))
             {
-                level2022_2.Add(strs[i + 4]);
+                level2022_7.Add(split[0]);
+                count_down_2022_7.Add(int.Parse(split[1]));
             }
-
-            if (!string.IsNullOrEmpty(strs[i + 5]))
+            if (!string.IsNullOrEmpty(split[2]))
             {
-                count_down_2022_2.Add(int.Parse(strs[i + 5]));
+                level2022_8.Add(split[2]);
+                count_down_2022_8.Add(int.Parse(split[3]));
             }
-
-            if (!string.IsNullOrEmpty(strs[i + 7]))
+            if (!string.IsNullOrEmpty(split[4])&&split[5]!="!")
             {
-                level2022_3.Add(strs[i + 7]);
+                level2022_9.Add(split[4]);
+                count_down_2022_9.Add(int.Parse(split[5]));
             }
-
-            if (!string.IsNullOrEmpty(strs[i + 8]))
-            {
-                count_down_2022_3.Add(int.Parse(strs[i + 8]));
-            }
-
-            //====
-            if (!string.IsNullOrEmpty(strs[i + 10]))
-            {
-                level2022_4.Add(strs[i + 10]);
-            }
-
-            if (!string.IsNullOrEmpty(strs[i + 11]))
-            {
-                count_down_2022_4.Add(int.Parse(strs[i + 11]));
-            }
-
-            if (!string.IsNullOrEmpty(strs[i + 13]))
-            {
-                level2022_5.Add(strs[i + 13]);
-            }
-
-            if (!string.IsNullOrEmpty(strs[i + 14]))
-            {
-                count_down_2022_5.Add(int.Parse(strs[i + 14]));
-            }
-
-            if (!string.IsNullOrEmpty(strs[i + 16]))
-            {
-                level2022_6.Add(strs[i + 16]);
-            }
-
-            if (!string.IsNullOrEmpty(strs[i + 17]))
-            {
-                if (strs[i + 17].Contains('!'))
-                {
-                    Debug.Log("???????");
-                    continue;
-                }
-
-                count_down_2022_6.Add(int.Parse(strs[i + 17]));
-            }
+            
+            
+            
         }
-        
-        FileTools.WriteFile("/Users/ddw/Downloads/2022_1.json", SerializeTools.ObjToString(level2022_1.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/2022_2.json", SerializeTools.ObjToString(level2022_2.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/2022_3.json", SerializeTools.ObjToString(level2022_3.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/2022_4.json", SerializeTools.ObjToString(level2022_4.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/2022_5.json", SerializeTools.ObjToString(level2022_5.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/2022_6.json", SerializeTools.ObjToString(level2022_6.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_1.json",
-            SerializeTools.ObjToString(count_down_2022_1.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_2.json",
-            SerializeTools.ObjToString(count_down_2022_2.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_3.json",
-            SerializeTools.ObjToString(count_down_2022_3.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_4.json",
-            SerializeTools.ObjToString(count_down_2022_4.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_5.json",
-            SerializeTools.ObjToString(count_down_2022_5.ToArray()));
-        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_6.json",
-            SerializeTools.ObjToString(count_down_2022_6.ToArray()));
+        FileTools.WriteFile("/Users/ddw/Downloads/2022_7.json", SerializeTools.ObjToString(level2022_7.ToArray()));
+        FileTools.WriteFile("/Users/ddw/Downloads/2022_8.json", SerializeTools.ObjToString(level2022_8.ToArray()));
+        FileTools.WriteFile("/Users/ddw/Downloads/2022_9.json", SerializeTools.ObjToString(level2022_9.ToArray()));
+        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_7.json",
+            SerializeTools.ObjToString(count_down_2022_7.ToArray()));
+        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_8.json",
+            SerializeTools.ObjToString(count_down_2022_8.ToArray()));
+        FileTools.WriteFile("/Users/ddw/Downloads/count_down_2022_9.json",
+            SerializeTools.ObjToString(count_down_2022_9.ToArray()));
         return;
     }
 

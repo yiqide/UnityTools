@@ -10,8 +10,6 @@ namespace Framework.Tools
     public static class NetworkTools
     {
         #region 开放的信息
-        //下载系统
-        public static int WaitTaskCount => tasks.Count;
 
         /// <summary>
         /// 当前下载器的数量
@@ -21,110 +19,61 @@ namespace Framework.Tools
         #endregion
         
         private static readonly object LockMe = new object();
-        //等待下载的列表
-        private static LinkedList<DownLoadTask> tasks = new LinkedList<DownLoadTask>();
-        //下载中的列表
+        
+        //顺序等待列表队列 ，分优先级   从小到大排序
+        private static SortedDictionary<int, LinkedList<DownLoadTask>> dictionaryTasks = new SortedDictionary<int, LinkedList<DownLoadTask>>();
+        //顺序
+
+        //正在下载中的列表
         private static List<DownLoadTask> dowingTasks = new List<DownLoadTask>();
         
         private static List<Coroutine> coroutines = new List<Coroutine>();
-        
-        /// <summary>
-        /// action会在任务完成时执行
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="url"></param>
-        /// <param name="callBackAction">会在任务完成时执行</param>
-        public static void AddTask(string filePath, string url,int timeout=0, Action<bool> callBackAction = null)
-        {
-            if (DownloaderCount == 0) AddDownloader(1);
-            AddTask(new DownLoadTask(filePath, url,timeout, callBackAction));
-        }
 
         public static void AddTask(DownLoadTask task,bool addFast=false)
         {
-            if (DownloaderCount == 0) AddDownloader(1);
-            lock (LockMe)
+            if (!dictionaryTasks.ContainsKey(task.Priority))
             {
-                foreach (var item in dowingTasks)
+                LinkedList<DownLoadTask> linkedList = new LinkedList<DownLoadTask>();
+                linkedList.AddFirst(task);
+                dictionaryTasks.Add(task.Priority,linkedList);
+            }
+            else
+            {
+                //不在添加重复的任务
+                if (dowingTasks.Contains(task))
                 {
-                    if ( item.FilePath==task.FilePath)
-                    {
-                        return;
-                    }
+                    return;
                 }
-
-                foreach (var item in tasks)
+                if (dictionaryTasks[task.Priority].Contains(task))
                 {
-                    if ( item.FilePath==task.FilePath)
-                    {
-                        return;
-                    }
+                    return;
                 }
-
-                if (addFast) 
-                    tasks.AddFirst(task);
+                if (addFast)
+                    dictionaryTasks[task.Priority].AddFirst(task);
                 else
-                    tasks.AddLast(task);
-
+                    dictionaryTasks[task.Priority].AddLast(task);
             }
         }
 
-        /// <summary>
-        /// action会在任务组完成时执行
-        /// </summary>
-        /// <param name="filePathAndUrl">key-filePath  value-url</param>
-        /// <param name="callBackAction"></param>
-        public static void AddTasks(Dictionary<string, string> filePathAndUrl,bool addFast=false, Action<bool> callBackAction = null)
+        public static void AddTasks(DownLoadTasks downLoadTasks)
         {
-            if (DownloaderCount == 0) AddDownloader(1);
-            var count = filePathAndUrl.Count;
-            int taskSucceedCount = 0;
-            bool taskFailed = false;
-            foreach (var item in filePathAndUrl)
-            {
-                var task = new DownLoadTask(item.Key, item.Value, 0,(b) =>
-                {
-                    if (b)
-                    {
-                        taskSucceedCount++;
-                        if (taskSucceedCount == count)
-                        {
-                            callBackAction?.Invoke(true);
-                        }
-                    }
-                    else
-                    {
-                        if (!taskFailed)
-                        {
-                            callBackAction?.Invoke(false);
-                            taskFailed = true;
-                        }
-                    }
-                });
-                AddTask(task,addFast);
-            }
-        }
-        
-        public static void AddTasks(DownLoadTasks downLoadTasks,bool addFast=false)
-        {
-            if (DownloaderCount == 0) AddDownloader(1);
             foreach (var item in downLoadTasks.Tasks)
             {
-                AddTask( item,addFast);
+                AddTask(item);
             }
         }
-
-        /// <summary>
-        /// 尽可能将下载任务设置到下载任务的最前方
-        /// </summary>
-        /// <param name="downLoadTask"></param>
-        public static void SetFirst(DownLoadTask downLoadTask)
+        //从下载列表中移除
+        public static bool TryRemoveTask(DownLoadTask task)
         {
-            if (tasks.Contains(downLoadTask))
+            if (dictionaryTasks.ContainsKey(task.Priority))
             {
-                tasks.Remove(downLoadTask);
-                tasks.AddFirst(downLoadTask);
+                if (dictionaryTasks[task.Priority].Contains(task))
+                {
+                    dictionaryTasks[task.Priority].Remove(task);
+                    return true;
+                }
             }
+            return false;
         }
 
         /// <summary>
@@ -133,164 +82,230 @@ namespace Framework.Tools
         /// <param name="count">要添加下载器的数量</param>
         public static void AddDownloader(int count)
         {
-            for (int i = 0; i < count; i++)
+            lock (LockMe)
             {
-                coroutines.Add(CoroutineTools.Instance.StartCoroutine(DownLoad()));
+                for (int i = 0; i < count; i++)
+                {
+                    coroutines.Add(CoroutineTools.Instance.StartCoroutine(DownLoad()));
+                }
             }
+        }
+
+        //获取一个任务 并从等待列表中移除
+        private static DownLoadTask GetTask()
+        {
+            foreach (var item in dictionaryTasks)
+            {
+                if (item.Value.Count!=0)
+                {
+                    var task = item.Value.First.Value;
+                    item.Value.RemoveFirst();
+                    return task;
+                }
+            }
+            return null;
         }
 
         //下载器
         private static IEnumerator DownLoad()
         {
             byte[] data;
+            DownLoadTask task=null;
             while (true)
             {
-                if (tasks.Count != 0)
+                task = GetTask();
+                for (int i = 0; i < task.RestartCount; i++)
                 {
-                    DownLoadTask task = tasks.First.Value;
-                    dowingTasks.Add(task);
-                    tasks.Remove(task);
-                    task.SetStatus(DownLoadTaskStatus.DownLoading);
-                    UnityWebRequest request = UnityWebRequest.Get(task.Url);
-                    if (task.Timeout!=0) request.timeout=task.Timeout;
-                    task.UnityWebRequest = request;
-                    string savePath = Path.GetDirectoryName(task.FilePath);
-                    if (!string.IsNullOrEmpty(savePath) && !Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
-                    yield return request.SendWebRequest();
-                    if (request.isDone && string.IsNullOrEmpty(request.error))
+                    if (task != null)
                     {
-                        using (FileStream fs = new FileStream(task.FilePath, FileMode.OpenOrCreate))
+                        dowingTasks.Add(task);
+                        task.SetStatus(DownLoadTaskStatus.DownLoading);
+                        UnityWebRequest request = UnityWebRequest.Get(task.Url);
+                        if (task.Timeout != 0) request.timeout = task.Timeout;
+                        task.UnityWebRequest = request;
+                        string savePath = Path.GetDirectoryName(task.FilePath);
+                        if (!string.IsNullOrEmpty(savePath) && !Directory.Exists(savePath))
+                            Directory.CreateDirectory(savePath);
+                        yield return request.SendWebRequest();
+                        if (request.isDone && string.IsNullOrEmpty(request.error))
                         {
-                            fs.SetLength(0);
-                            data = request.downloadHandler.data;
-                            fs.Write(data, 0, data.Length);
+                            using (FileStream fs = new FileStream(task.FilePath, FileMode.OpenOrCreate))
+                            {
+                                fs.SetLength(0);
+                                data = request.downloadHandler.data;
+                                fs.Write(data, 0, data.Length);
+                            }
+                            //Debug.Log("下载完成");
+                            task.SetStatus(DownLoadTaskStatus.Complete);
+                            task.succeedCallBack?.Invoke(task);
+                            dowingTasks.Remove(task);
+                            request.Dispose();
+                            task.UnityWebRequest = null;
+                            goto jump;//跳出循环
                         }
-                        Debug.Log("下载完成");
-                        task.SetStatus( DownLoadTaskStatus.Complete);
-                        dowingTasks.Remove(task);
-                        task.Action?.Invoke(true);
+                        else
+                        {
+                            //Debug.Log("下载失败");
+                            try
+                            {
+                                File.Delete(task.FilePath);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogWarning(e);
+                            }
+
+                            task.SetStatus(DownLoadTaskStatus.Fail);
+                            dowingTasks.Remove(task);
+                            //最后一次失败就调用失败的方法
+                            if (i==task.RestartCount-1) task.failCallBack?.Invoke(task, request.error);
+                            request.Dispose();
+                            task.UnityWebRequest = null;
+                        }
                     }
-                    else
-                    {
-                        Debug.Log("下载失败");
-                        Debug.LogWarning(request.error);
-                        try
-                        {
-                            File.Delete(task.FilePath);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarning(e);
-                        }
-                        task.SetStatus( DownLoadTaskStatus.Fail);
-                        dowingTasks.Remove(task);
-                        task.Action?.Invoke(false);
-                    }
-                    request.Dispose();
-                    task.UnityWebRequest = null;
                 }
+                jump:
                 yield return null;
             }
         }
 
+        //单个任务
         public class DownLoadTask
         {
             public string FilePath => filePath;
             public string Url => url;
-            public UnityWebRequest UnityWebRequest //成功后和失败后都是null
+            /// <summary>
+            /// 成功后和失败后都是null
+            /// </summary>
+            public UnityWebRequest UnityWebRequest 
             {
                 get { return unityWebRequest; }
                 set { unityWebRequest = value; }
             }
-            public string TaskName => taskName;
+            /// <summary>
+            /// 任务标识符,目前没什么用
+            /// </summary>
+            public string TaskID => taskID;
             public DownLoadTaskStatus Status => status;
-            public Action<bool> Action => action;
+            public event Action<DownLoadTask> SucceedCallBack
+            {
+                add { succeedCallBack += value;}
+                remove { succeedCallBack -= value;}
+            }
+            public event Action<DownLoadTask,string> FailCallBack
+            {
+                add { failCallBack += value;}
+                remove { failCallBack -= value; }
+            }
+            public Action<DownLoadTask> succeedCallBack;
+            public Action<DownLoadTask,string> failCallBack;
             public int Timeout => timeout;
-            
-            
+            public int Priority=>priority;
+            public int RestartCount=>restartCount;//重试次数
+            private int priority;//优先级 0 是最高优先级
+            private int restartCount;//重试次数
             private int timeout;
             private DownLoadTaskStatus status;
             private string filePath;
             private string url;
-            private Action<bool> action;
             private UnityWebRequest unityWebRequest = null;
-            private string taskName;
-
+            private string taskID;
             public void SetStatus(DownLoadTaskStatus status)
             {
                 this.status = status;
             }
-
-            public DownLoadTask(string filePath, string url,int timeout=0,Action<bool> action = null, string taskName = null)
+            public DownLoadTask(string filePath, string url,int priority,int reStartCount=2,int timeout=0,string taskID = null)
             {
                 this.filePath = filePath;
                 this.url = url;
-                this.action = action;
-                this.taskName = taskName;
+                this.taskID = taskID;
                 this.timeout = timeout;
+                this.priority = priority;
+                restartCount = reStartCount;
                 status = DownLoadTaskStatus.None;
             }
         }
 
+        //多个任务组成一个任务组
         public class DownLoadTasks
         {
-            public List<DownLoadTask> Tasks => tasks;
-
-            public int CompleteCount()
+            public DownLoadTask[] Tasks => tasks;
+            public int CompleteCount => succeedCount;
+            public float DownLoadSchedule => ((float) CompleteCount) / tasks.Length;
+            /// <summary>
+            /// 所有任务成功时的回调
+            /// </summary>
+            public event Action<DownLoadTasks> SucceedCallBack
             {
-                int result = 0;
+                add { succeedCallBack += value;}
+                remove { succeedCallBack -= value;}
+            }
+            /// <summary>
+            /// 有任务失败时，会移除在等待列表的任务
+            /// 正在下载的任务不受影响，直到任务返回结果
+            /// 之后会收集报错信息 并调用该方法
+            /// </summary>
+            public event Action<DownLoadTasks,string[]> FailCallBack
+            {
+                add { failCallBack += value;}
+                remove { failCallBack -= value; }
+            }
+            private Action<DownLoadTasks> succeedCallBack;
+            private Action<DownLoadTasks, string[]> failCallBack;
+            
+            private DownLoadTask[] tasks;
+
+            public DownLoadTasks(DownLoadTask[] tasks)
+            {
+                this.tasks = tasks;
                 foreach (var item in tasks)
                 {
-                    if (item.Status == DownLoadTaskStatus.Complete)
+                    item.FailCallBack += FailBack;
+                    item.SucceedCallBack += SucceedBack;
+                }
+            }
+
+            private int succeedCount=0;
+            private int resultCount = 0;
+            private void SucceedBack(DownLoadTask task)
+            {
+                resultCount++;
+                if (succeedCount==Tasks.Length)
+                {
+                    succeedCallBack?.Invoke(this);
+                }
+                if (failFlag&&resultCount==Tasks.Length)
+                {
+                    failCallBack.Invoke(this,msgs.ToArray());
+                }
+            }
+
+            private bool failFlag = false;
+            private List<string> msgs=new List<string>();
+            private void FailBack(DownLoadTask task,string msg)
+            {
+                resultCount++;
+                msgs.Add(msg);
+                if (failFlag)
+                {
+                    int count=0;
+                    foreach (var item in Tasks)
                     {
-                        result++;
+                        if ( NetworkTools.TryRemoveTask(item))
+                        {
+                            count++;
+                        }
                     }
+                    resultCount += count;
+                    failFlag = true;
                 }
 
-                return result;
-            }
-
-            public float DownLoadSchedule => ((float) CompleteCount()) / tasks.Count;
-
-            private Action<bool> Action;
-            private List<DownLoadTask> tasks;
-
-            public DownLoadTasks(Dictionary<string, string> filePathAndUrl, Action<bool> action)
-            {
-                var tasks = new List<DownLoadTask>();
-                Action = action;
-                foreach (var item in filePathAndUrl)
+                if (resultCount==Tasks.Length)
                 {
-                    tasks.Add(new DownLoadTask(item.Key, item.Value, 0,(b) =>
-                    {
-                        if (b)
-                        {
-                            CallBack();
-                        }
-                        else
-                        {
-                            if (!callBackFalg)
-                            {
-                                callBackFalg = true;
-                                Action.Invoke(false);
-                            }
-                        }
-                    }));
+                    failCallBack.Invoke(this,msgs.ToArray());
                 }
-
-                this.tasks = tasks;
             }
-
             private bool callBackFalg = false;
-
-            private void CallBack()
-            {
-                if (CompleteCount() == Tasks.Count)
-                {
-                    callBackFalg = true;
-                    Action.Invoke(true);
-                }
-            }
         }
 
         public enum DownLoadTaskStatus
